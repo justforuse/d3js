@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <script src="d3.v3.js"></script>
+    <style>
+    .node circle {
+        fill: #fff;
+        stroke: steelblue;
+        stroke-width: 1.5px;
+    }
+    
+    .node {
+        font: 12px sans-serif;
+    }
+    
+    .link {
+        fill: none;
+        stroke: #ccc;
+        stroke-width: 1.5px;
+    }
+    </style>
+</head>
+
+<body>
+    <script>
+    var height = 500,
+        width = 600;
+    var cluster = d3.layout.cluster().size([height, width - 100]);
+
+    d3.json("data.json", function(error, root) {
+    	console.log(root);
+        var nodes = cluster.nodes(root);
+        var links = cluster.links(nodes);
+
+        console.log(nodes);
+        console.log(links);
+        var diagonal = d3.svg.diagonal().projection(function(d) {
+            return [d.y, d.x];
+        })
+
+        var svg = d3.select("body").append("svg")
+            .attr("width", width)
+            .attr("height", height)
+            .append("g")
+            .attr("transform", "translate(40,0)")
+
+        //link 用来画线
+        var link = svg.selectAll(".link").data(links)
+            .enter()
+            .append("path")
+            .attr("class", "link")
+            .attr("d", diagonal);
+        //用来画点 点和线的顺序可以互换，但是线会覆盖在点上！！
+        var node = svg.selectAll(".node")
+            .data(nodes)
+            .enter()
+            .append("g")
+            .attr("class", "node")
+            .attr("transform", function(d) {
+                return "translate(" + d.y + "," + d.x + ")";
+            })
+            .on("mouseover", function(d, i) {
+                d3.select(this)
+                    .attr("fill", "yellow");
+            })
+            .on("mouseout", function(d, i) {
+                d3.select(this)
+                    .transition()
+                    .duration(500)
+                    .attr("fill", "red");
+            })
+
+
+        node.append("circle")
+            .attr("r", 4.5)
+
+        node.append("text")
+            .attr("dx", function(d) {
+                return d.children ? -8 : 8;
+            })
+            .attr("dy", 3)
+            .style("text-anchor", function(d) {
+            	//设置anchor的位置在文本的末尾还是开头
+                return d.children ? "end" : "start";
+            })
+            .text(function(d) {
+                return d.name;
+            })
+    })
+    </script>
+</body>
+
+</html>

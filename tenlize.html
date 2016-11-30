@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+</head>
+<body>
+	<script>
+		function tenlize(num){
+			return num%10 == 0 ? num : num+(10-num%10);
+		}
+		console.log(tenlize(4))
+		console.log(tenlize(0.4))
+		console.log(tenlize(-3.4))
+		console.log(tenlize(40))
+		console.log(tenlize(50.0))
+		console.log(tenlize(41))
+		console.log(tenlize(49))
+		console.log(tenlize(4.9))
+		console.log(tenlize(49.1))
+
+		function shortlize(str){
+			//console.log(str.length);
+			if(str.length<=4){
+				return str;
+			}else{
+				return str.substring(0, 4) + "...";
+			}
+		}
+		console.log(shortlize("123"))
+		console.log(shortlize("1234"))
+		console.log(shortlize("12313414"))
+		console.log(shortlize("1"))
+		console.log(shortlize("是否斯1312"))
+		console.log(shortlize("按时"))
+	</script>
+</body>
+</html>

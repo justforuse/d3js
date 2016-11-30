@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="d3.v3.js"></script>
+    <style>
+    svg {
+        padding: 10px;
+        border: 1px solid red;
+    }
+    
+    text {
+        width: 20px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    rect:hover {
+        fill: #CAEE7D;
+        cursor: pointer;
+    }
+    
+    .axis line {
+        shape-rendering: crispEdges;
+        stroke: #b1d564;
+    }
+    
+    .axis .minor line {
+        stroke: #d8d8d8;
+        stroke-width: 1;
+    }
+    
+    .y text {
+        font-size: 11px;
+        fill: #606060;
+    }
+    
+    .x text {
+        font-size: 11px;
+        fill: #606060;
+    }
+    </style>
+</head>
+
+<body>
+    <script>
+    var falseData1 = {
+        "data": {
+            "average": 1206.96,
+            "pageIndex": 0,
+            "pageSize": 6,
+            "series": [{
+                "proportion": 1.0,
+                "id": "非常长",
+                "count": 50,
+                "name": "非常长(600~*)",
+                "data": null
+            }],
+            "totalPage": 0,
+            "totalRows": 1
+        },
+        "message": "成功",
+        "result": "success"
+    };
+    var falseData2 = {
+        "data": {
+            "average": 23.9,
+            "pageIndex": 0,
+            "pageSize": 6,
+            "series": [{
+                "proportion": 0.25,
+                "id": "非常短",
+                "count": 35,
+                "name": "非常短(*~30)",
+                "data": null
+            }, {
+                "proportion": 0.81,
+                "id": "短",
+                "count": 13,
+                "name": "短(30~60)",
+                "data": null
+            }, {
+                "proportion": 0.25,
+                "id": "长",
+                "count": 1,
+                "name": "长(90~120)",
+                "data": null
+            }, {
+                "proportion": 0.25,
+                "id": "正常",
+                "count": 1,
+                "name": "正常(60~90)",
+                "data": null
+            }],
+            "totalPage": 0,
+            "totalRows": 4
+        },
+        "message": "成功",
+        "result": "success"
+    };
+
+    var dataset = falseData2.data.series;
+    //var dataset2 = dataset.push({});
+    console.log(dataset);
+    var dod = [];
+    for (var i = 0; i < dataset.length; i++) {
+        dod.push(dataset[i].name)
+    }
+    dod.push("");
+    console.log(dod);
+    var svgWidth = 500,
+        svgHeight = 280;
+    var width = 460,
+        height = 250;
+    var rect_step = width / dataset.length;
+    var rect_width = rect_step / 2;
+    console.log("rect_step: " + rect_step);
+
+    function tenlize(num) {
+        return num % 10 == 0 ? num : num + (10 - num % 10);
+    }
+
+    function shortlize(str) {
+        if (str.length <= 4) {
+            return str;
+        } else {
+            return str.substring(0, 4) + "...";
+        }
+    }
+
+    function percentlize(num) {
+        return num % 20 == 0 ? num : (Math.floor(num / 20) + 1) * 20;
+    }
+
+    var x = d3.scale.ordinal()
+        .rangePoints([0, width]);
+
+    var y = d3.scale.linear()
+        .domain([0, d3.max(dataset, function(d) {
+            console.log(percentlize(d.proportion * 100));
+            return percentlize(d.proportion * 100);
+        })])
+        .nice()
+        .rangeRound([height, 0])
+    x.domain(dod)
+    var xAxis = d3.svg.axis()
+        .scale(x)
+        .tickSize(10, 10)
+        .tickPadding(3)
+        .tickFormat(function(d) {
+            return shortlize(d);
+        })
+        .orient("bottom")
+        // dataset.map(function(d) {
+        //         return d.name;
+        //     })
+
+
+
+    var yAxis = d3.svg.axis()
+        .scale(y)
+        .ticks(4)
+        .orient("left")
+        .tickSize(-width, 10, 10)
+        .tickFormat(function(d) {
+            return d + "%"
+        })
+
+
+
+    var svg = d3.select("body")
+        .append("svg")
+        .attr("width", svgWidth)
+        .attr("height", svgHeight)
+        .append("g")
+        .attr("transform", "translate(30,10)")
+
+
+    svg.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0, " + height + ")")
+        .call(xAxis)
+        .attr("fill", "none")
+        .selectAll(".tick text")
+        .attr("x", rect_width)
+        .attr("text-anchor", "start")
+
+
+
+    var gy = svg.append("g")
+        .attr("class", "y axis")
+        .attr("transform", "translate(0, 0)")
+        .call(yAxis)
+        .attr("fill", "none")
+
+    gy.selectAll("g")
+        .classed("minor", true)
+
+
+    svg.selectAll(".bar")
+        .data(dataset)
+        .enter()
+        .append("rect")
+        .attr("fill", "#b1d564")
+        .attr("class", "bar")
+        .attr("y", function(d, i) {
+            //console.log(y(d.count));
+            return height;
+        })
+        .attr("height", 0)
+        .attr("width", function(d, i) {
+            return rect_width;
+        })
+        .transition()
+        .duration(1000)
+        .attr("x", function(d, i) {
+            return i * rect_step + (rect_width / 2);
+        })
+        .attr("y", function(d, i) {
+            return y(d.proportion * 100);
+        })
+        .attr("height", function(d, i) {
+            return height - y(d.proportion * 100);
+        })
+
+
+    // svg.selectAll(".x-text")
+    //     .data(dataset)
+    //     .enter()
+    //     .append("text")
+    //     .attr("class", "x-text")
+    //     .attr("x", function(d, i) {
+    //         return (i + 0.5) * rect_step;
+    //     })
+    //     .attr("y", function(d, i) {
+    //         return height + 20;
+    //     })
+    //     // .attr("dx", -7)
+    //     .attr("text-anchor", "middle")
+    //     .attr("font-size", "11")
+    //     .attr("fill", "rgb(96,96,96)")
+    //     .text(function(d, i) {
+    //         return d.name;
+    //     })
+
+
+    // svg.append("line")
+    //     .attr("x1", 0)
+    //     .attr("y1", height)
+    //     .attr("x2", width)
+    //     .attr("y2", height)
+    //     .attr("stroke", "#b1d564")
+
+
+    // dataset.push({});
+    // console.log(dataset);
+    // svg.selectAll(".x-tick")
+    //     .data(dataset)
+    //     .enter()
+    //     .append("line")
+    //     .attr("class", "x-tick")
+    //     .attr("x1", function(d, i) {
+    //         console.log(d);
+    //         return i * rect_step;
+    //     })
+    //     .attr("y1", function(d, i) {
+    //         return height;
+    //     })
+    //     .attr("x2", function(d, i) {
+    //         return i * rect_step;
+    //     })
+    //     .attr("y2", function(d, i) {
+    //         return height + 5;
+    //     })
+    //     .attr("stroke", "#b1d564")
+    </script>
+</body>
+
+</html>

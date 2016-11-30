@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="d3.v3.js"></script>
+    <style>
+    svg {
+        padding: 10px;
+    }
+    
+    text {
+        width: 20px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    rect:hover {
+        fill: #CAEE7D;
+        cursor: pointer;
+    }
+    
+    .axis line {
+        shape-rendering: crispEdges;
+        stroke: #b1d564;
+    }
+    
+    .axis .minor line {
+        stroke: #d8d8d8;
+        stroke-width: 1;
+    }
+    
+    .y text {
+        font-size: 11px;
+        fill: #606060;
+    }
+    
+    .x text {
+        font-size: 11px;
+        fill: #606060;
+    }
+    </style>
+</head>
+<body>
+<script>
+var falseData2 = {
+        "data": {
+            "average": 23.9,
+            "pageIndex": 0,
+            "pageSize": 6,
+            "series": [{
+                "proportion": 0.7,
+                "id": "非常短",
+                "count": 35,
+                "name": "非常短(*~30)",
+                "data": null
+            }, {
+                "proportion": 0.26,
+                "id": "短",
+                "count": 13,
+                "name": "短(30~60)",
+                "data": null
+            }, {
+                "proportion": 0.02,
+                "id": "长",
+                "count": 1,
+                "name": "长(90~120)",
+                "data": null
+            }, {
+                "proportion": 0.02,
+                "id": "正常",
+                "count": 1,
+                "name": "正常(60~90)",
+                "data": null
+            }],
+            "totalPage": 0,
+            "totalRows": 4
+        },
+        "message": "成功",
+        "result": "success"
+    };
+    var dataset2 = falseData2.data.series;
+    console.log(dataset2);
+    var dod2 = [];
+    for (var i = 0; i < dataset2.length; i++) {
+        dod2.push(dataset2[i].name)
+    }
+    dod2.push("");
+
+    var svgWidth = 500,
+        svgHeight = 250;
+    var width = 460,
+        height = 210;
+    function shortlize(str) {
+        if (str.length <= 4) {
+            return str;
+        } else {
+            console.log("here");
+            return str.substring(0, 4) + "...";
+        }
+    }
+    var rect_step2 = width / dataset2.length;
+    var rect_width2 = rect_step2 / 2;
+    var x2 = d3.scale.ordinal()
+        .rangePoints([0, width]);
+    var y2 = d3.scale.linear()
+        .domain([0, d3.max(dataset2, function (d) {
+            console.log(d.count);
+            return d.count % 10 == 0 ? d.count : d.count + (10 - d.count % 10);
+        })])
+        .range([height, 0]);
+
+    x2.domain(dod2);
+    var xAxis2 = d3.svg.axis()
+        .scale(x2)
+        .tickSize(10,0)
+        .tickFormat(function(d){
+            return shortlize(d);
+        })
+        .orient("bottom");
+
+
+
+    var yAxis2 = d3.svg.axis()
+        .scale(y2)
+        .orient("left")
+        .tickSize(-width)
+        .ticks(5)
+        .tickFormat(function(d){
+            return d*2 + "%";
+        })
+
+
+    var svg2 = d3.select("body")
+        .append("svg")
+        .attr("width", svgWidth)
+        .attr("height", svgHeight)
+        .append("g")
+        .attr("transform", "translate(30,10)")
+
+
+    svg2.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0, " + height + ")")
+        .call(xAxis2)
+        .attr("fill", "none")
+        .selectAll(".tick text")
+        .attr("x", rect_width)
+        .attr("text-anchor", "start")
+
+
+    var gy2 = svg2.append("g")
+        .attr("class", "y axis")
+        .attr("transform", "translate(0, 0)")
+        .call(yAxis2)
+        .attr("fill", "none")
+
+    gy2.selectAll("g")
+        .classed("minor", true)
+
+
+    svg2.selectAll(".bar")
+        .data(dataset2)
+        .enter()
+        .append("rect")
+        .attr("fill", "#b1d564")
+        .attr("class", "bar")
+        .attr("y", function (d, i) {
+            console.log(y2(d.count));
+            return height;
+        })
+        .attr("height", 0)
+        .attr("width", function (d, i) {
+            return rect_width2;
+        })
+        .transition()
+        .duration(1000)
+        .attr("x", function (d, i) {
+            return i * rect_step2 + (rect_width2 / 2);
+        })
+        .attr("y", function (d, i) {
+            return y2(d.count);
+        })
+        .attr("height", function (d, i) {
+            return height - y2(d.count);
+        })
+</script>
+    
+</body>
+</html>

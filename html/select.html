@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+	<script src="../d3.v3.js"></script>
+</head>
+<body>
+	
+	<script>
+		d3.select("body").datum(42).append("h1");
+		var data=[1,2,3];
+		//如果找不到节点则以html标签为父标签
+		console.log(d3.select("span")[0]);
+		d3.select("span").data(data).enter().append("p").text(function(d){
+			return d;
+		})
+
+		data.push(4);
+		console.log(data);
+	</script>
+</body>
+</html>

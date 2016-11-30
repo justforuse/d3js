@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="../d3.v3.js"></script>
+</head>
+
+<body>
+    <script>
+    var rand = d3.random.normal(0, 25);
+
+    var dataset = [];
+    for (var i = 0; i < 100; i++) {
+        dataset.push(rand());
+    }
+    console.log(dataset);
+
+    var histogram = d3.layout.histogram()
+        .range([-50, 50])
+        .bins(15)
+        .frequency(true)
+
+    var data = histogram(dataset);
+    data.push({
+        dx:100/15,
+        x:50,
+        y:0
+    })
+    console.log(data);
+
+    var maxHeight = 400;
+    var rect_step = 30;
+    var heights = [];
+    for (var i = 0; i < data.length; i++) {
+        heights.push(data[i].y);
+    }
+
+    var yScale = d3.scale.linear()
+        .domain([d3.min(heights), d3.max(heights)])
+        .range([0, maxHeight])
+
+    var svg = d3.select("body")
+        .append("svg")
+        .attr("width", 700)
+        .attr("height", 600)
+        .append("g")
+        .attr("transform", "translate(30, 20)")
+
+    // svg.selectAll("rect")
+    //     .data(data)
+    //     .enter()
+    //     .append("rect")
+    //     .attr("x", function(d, i) {
+    //         return i * rect_step;
+    //     })
+    //     .attr("y", function(d, i) {
+    //         return maxHeight - yScale(d.y)
+    //     })
+    //     .attr("width", function(d, i) {
+    //         return rect_step - 2;
+    //     })
+    //     .attr("height", function(d, i) {
+    //         return yScale(d.y);
+    //     })
+
+    //     .attr("fill", "steelblue")
+
+    svg.selectAll("rect")
+        .data(data)
+        .enter()
+        .append("rect")
+        .attr("y", function(d, i) {
+            return maxHeight;
+        })
+        .attr("height", 0)
+        .attr("fill", "red")
+        .transition()
+        .duration(3000)
+        .ease("elastic")
+        .delay(function(d,i){
+            return 200*i
+        })
+        .attr("x", function(d, i){
+            return (i+0.5) * rect_step;
+        })
+        .attr("y", function(d, i) {
+            return maxHeight - yScale(d.y)
+        })
+        .attr("width", function(d, i) {
+            return rect_step - 2;
+        })
+        .attr("height", function(d, i) {
+            return yScale(d.y);
+        })
+        .attr("fill", "steelblue")
+
+
+    //     .attr("x", function(d, i) {
+    //         return i * rect_step;
+    //     })
+    //     .attr("y", function(d, i) {
+    //         return maxHeight - yScale(d.y)
+    //     })
+    //     .attr("width", function(d, i) {
+    //         return rect_step - 2;
+    //     })
+    //     .attr("height", function(d, i) {
+    //         return yScale(d.y);
+    //     })
+
+    // .attr("fill", "steelblue")
+
+
+
+    svg.append("line")
+        .attr("stroke", "black")
+        .attr("stroke-width", "2px")
+        .attr("x1", 15)
+        .attr("y1", maxHeight)
+        .attr("x2", (data.length-1) * rect_step +15)
+        .attr("y2", maxHeight)
+
+    svg.selectAll(".linetick")
+        .data(data)
+        .enter()
+        .append("line")
+        .attr("stroke", "black")
+        .attr("stroke-width", "2px")
+        .attr("x1", function(d, i) {
+            return (i + 0.5) * rect_step;
+        })
+        .attr("y1", maxHeight)
+        .attr("x2", function(d, i) {
+            return (i + 0.5) * rect_step;
+        })
+        .attr("y2", maxHeight + 3)
+
+    svg.selectAll("text")
+        .data(data)
+        .enter()
+        .append("text")
+        .attr("x", function(d, i) {
+            return i * rect_step;
+        })
+        .attr("y", maxHeight)
+        .attr("dx", 4)
+        .attr("dy", 18)
+        .text(function(d, i) {
+            console.log(d);
+            return Math.floor(d.x)
+        })
+
+    svg.selectAll(".number")
+        .data(data)
+        .enter()
+        .append("text")
+        .attr("x", function(d, i) {
+            return i * rect_step;
+        })
+        .attr("y", function(d, i) {
+            return maxHeight - yScale(d.y)+20;
+        })
+        .attr("fill", "white")
+        .attr("dx", rect_step / 4)
+        //.attr("dy", 10)
+        .text(function(d, i) {
+            return d.y;
+        })
+
+    </script>
+</body>
+
+</html>

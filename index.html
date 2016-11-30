@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="d3.v4.js"></script>
+    <style>
+    #rember + label {
+        background-color: white;
+        border-radius: 6px;
+        border: 3px solid #3a7caa;
+        width: 12px;
+        height: 12px;
+        color: #3a7caa;
+        font-weight: bold;
+        font-size: 18px;
+        display: inline-block;
+        text-align: center;
+        line-height: 15px;
+        position: relative;
+    }
+    
+    #rember:checked + label {}
+    
+    #rember:checked + label:after {
+        content: "\2714";
+        position: absolute;
+        left: 1px;
+        top:-3px;
+        text-shadow: 2px 0 white, 0 -2px white, -2px 0 white, 0 -2px white;
+    }
+    </style>
+</head>
+
+<body>
+    <button id="btn" style="display:none;">button</button>
+    <input type="checkbox" id="rember">
+    <label for="rember"></label>
+    <label for="rember">some words</label>
+    <p>AAAAAAAAA</p>
+    <p>BBBBBBBBB</p>
+    <p>CCCCCCCCC</p>
+    <script>
+    var dataset = [10, 20, 30, 40, 50];
+
+    var update = d3.select("body").selectAll("p").data(dataset);
+    console.log(update);
+    var enter = update;
+
+    update.text(function(d, i) {
+        return "update " + d;
+    });
+
+    enter.enter()
+        .append("p")
+        .text(function(d, i) {
+            return "enter " + d;
+        });
+    console.log(update);
+    var body = d3.select("body");
+    body.append("p").text("hello world");
+    </script>
+</body>
+
+</html>

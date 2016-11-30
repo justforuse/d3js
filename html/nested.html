@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="../d3.v3.js"></script>
+</head>
+
+<body>
+    <table>
+        <thead>
+            <tr>
+                <td> A</td>
+                <td> B</td>
+                <td> C</td>
+                <td> D</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                
+            </tr>
+            <tr>
+                
+            </tr>
+            <tr>
+                
+            </tr>
+            <tr>
+                
+            </tr>
+        </tbody>
+    </table>
+    <script>
+    var matrix = [
+  [ 0,  1,  2,  3],
+  [ 4,  5,  6,  7],
+  [ 8,  9, 10, 11],
+  [12, 13, 14, 15],
+];
+    var td = d3.selectAll("tbody tr").data(matrix).selectAll("td");
+    td.enter().append("td").data(function(d, i){
+    	return d;
+    })
+    </script>
+</body>
+
+</html>
