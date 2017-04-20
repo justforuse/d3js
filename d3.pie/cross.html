@@ -62,10 +62,14 @@
             })
         })
     arcs.append("path")
+	
         .attr("fill", function(d, i) {
             return color(i);
         })
+		
         .attr("d", arc)
+		.transition()
+		.transition(1000)
         //add data value  
     arcs.append("text")
         .attr("transform", function(d) {

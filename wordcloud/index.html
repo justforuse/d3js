@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="app">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="angular.js"></script>
+    <script src="../d3.v3.js"></script>
+    <script src="d3.layout.cloud.js"></script>
+    <style>
+        #cloud {
+            height: 500px;
+        }
+        
+        @keyframes someAnimationNameImadeUp {
+            0% {
+                fill: red;
+            }
+            25% {
+                fill: yellow;
+            }
+            50% {
+                fill: blue;
+            }
+            75% {
+                fill: green;
+            }
+            100% {
+                fill: red;
+            }
+        }
+        /* Now include a version for older webkit browsers */
+        
+        @-webkit-keyframes someAnimationNameImadeUp {
+            0% {
+                fill: red;
+            }
+            25% {
+                fill: yellow;
+            }
+            50% {
+                fill: blue;
+            }
+            75% {
+                fill: green;
+            }
+            100% {
+                fill: red;
+            }
+        }
+        
+        .mycircle {
+            animation: someAnimationNameImadeUp 5s infinite;
+            -webkit-animation: someAnimationNameImadeUp 5s infinite;
+            /* also need a webkit when applying CSS3 animations */
+        }
+    </style>
+    <script>
+        angular.module("app", [])
+            .directive("wordCloud", function () {
+                return {
+                    scope: {
+                        wordData: "=",
+                        dataLength: "=",
+                        wordClick: "&"
+                    },
+                    // template:"<div></div>",
+                    link: function (scope, element, attr, ctrl) {
+                        var color = d3.scale.category10();
+                        function init() {
+                            d3.select(element[0]).html("");
+                            d3.layout.cloud()
+                                .size([500, 500])
+                                .words(scope.wordData)
+                                .rotate(0)
+                                .fontSize(function (d) {
+                                    return Math.ceil(6 + 30 * d.prop)
+                                })
+                                .on("end", draw)
+                                .start();
+
+                        }
+
+                        function draw(words) {
+                            console.log("draw");
+                            d3.select(element[0])
+                                .append("svg")
+                                // .attr("preserveAspectRatio", "xMidYMid meet")
+                                // .attr("viewBox", "0 0 500 500")
+                                .attr("width", 850)
+                                .attr("height", 350)
+                                .append("g")
+                                .attr("transform", "translate(250,250)")
+                                .selectAll("text")
+                                .data(words)
+                                .enter()
+                                .append("text")
+                                .style("font-size", function (d) {
+                                    return Math.ceil(6 + 30 * d.prop)
+                                })
+                                .style("fill", function (d, i) {
+                                    return color(i);
+                                })
+                                .style("cursor", function (d, i) {
+                                    return "pointer";
+                                })
+
+                                .attr("transform", function (d) {
+                                    return "translate(" + [d.x, d.y] + ")";
+                                })
+                                .text(function (d) {
+                                    return d.text;
+                                })
+                                .on("click", function (d) {
+                                    console.log(d);
+                                })
+                                .on("mouseover", function () {
+                                    d3.select(this).classed("mycircle", true)
+                                        .transition().style("font-size", function (d) {
+                                            return Math.ceil(20 + 10 * d.prop) + "px"
+                                        }).attr("opacity", .5)
+                                }).on("mouseout", function () {
+                                    d3.select(this).transition().style("font-size", function (d) {
+                                        return Math.ceil(16 + 10 * d.prop) + "px"
+                                    }).attr("opacity", 1)
+                                })
+                                .append("title")
+                                .text(function (d, i) {
+                                    return d.text;
+                                });
+                        }
+
+                        init();
+                        scope.$watchCollection("wordData", function () {
+                            console.log("data changed");
+                            init();
+                        })
+                    }
+                }
+            })
+            .controller("ctrl", function ($scope) {
+                $scope.data = [
+                    {
+                        text: "max",
+                        prop: 0.9
+
+                    },
+                    {
+                        text: "medium",
+                        prop: 0.5
+                    },
+                    {
+                        text: "max",
+                        prop: 0.9
+
+                    },
+                    {
+                        text: "medium",
+                        prop: 0.5
+                    },
+                    {
+                        text: "max",
+                        prop: 0.9
+
+                    },
+                    {
+                        text: "medium",
+                        prop: 0.5
+                    },
+                    {
+                        text: "min",
+                        prop: 0.1
+
+                    },
+                    {
+                        text: "medium",
+                        prop: 0.5
+                    },
+                    {
+                        text: "min",
+                        prop: 0.1
+
+                    },
+                    {
+                        text: "medium",
+                        prop: 0.5
+                    },
+                    {
+                        text: "min",
+                        prop: 0.1
+
+                    },
+                    {
+                        text: "medium",
+                        prop: 0.5
+                    },
+                    {
+                        text: "min",
+                        prop: 0.1
+
+                    },
+                    {
+                        text: "medium",
+                        prop: 0.5
+                    },
+                    {
+                        text: "min",
+                        prop: 0.1
+
+                    },
+                    {
+                        text: "medium",
+                        prop: 0.5
+                    },
+                    {
+                        text: "min",
+                        prop: 0.1
+
+                    },
+                    {
+                        text: "medium",
+                        prop: 0.5
+                    },
+                    {
+                        text: "min",
+                        prop: 0.1
+
+                    },
+                    {
+                        text: "medium",
+                        prop: 0.5
+                    }
+                ];
+                console.log($scope.data.length);
+                $scope.addData = function () {
+                    $scope.data.push({
+                        text: "min",
+                        prop: 0.1
+                    })
+
+                    console.log($scope.data.length);
+                }
+            })
+    </script>
+
+</head>
+
+<body ng-controller="ctrl">
+    <div>
+        <word-cloud word-data="data" data-length="{{data.length}}"></word-cloud>
+    </div>
+    <button ng-click="addData()">Add</button>
+    <div id="cloud"></div>
+    <!--<script>
+        var data = [
+            
+            {
+                text: "medium",
+                prop: 0.5
+            },
+            
+            {
+                text: "min",
+                prop: 0.1
+
+            }
+        ];
+        var color = d3.scale.category10();
+        d3.layout.cloud()
+            .size([500, 500])
+            .words(data)
+            .rotate(0)
+            .fontSize(function (d) {
+                return Math.ceil(12 + 10 * d.prop)
+            })
+            .on("end", draw)
+            .start();
+
+        function draw(words) {
+            d3.select("#cloud")
+                .append("svg")
+                // .attr("preserveAspectRatio", "xMidYMid meet")
+                // .attr("viewBox", "0 0 500 500")
+                .attr("width", 850)
+                .attr("height", 350)
+                .append("g")
+                .attr("transform", "translate(320,200)")
+                .selectAll("text")
+                .data(words)
+                .enter().append("text")
+                .style("font-size", function (d) {
+                    return Math.ceil(12 + 10 * d.prop) + "px";
+                })
+                .style("fill", function (d, i) {
+                    return color(i);
+                })
+                .style("cursor", function (d, i) {
+                    return "pointer";
+                })
+
+                .attr("transform", function (d) {
+                    return "translate(" + [d.x, d.y] + ")";
+                })
+                .text(function (d) {
+                    return d.text;
+                })
+                .on("click", function (d) {
+                    console.log(d);
+                })
+                .on("mouseover", function () {
+                    d3.select(this).transition().style("font-size", function (d) {
+                        return Math.ceil(15 + 10 * d.prop) + "px"
+                    }).attr("opacity", .5)
+                }).on("mouseout", function () {
+                    d3.select(this).transition().style("font-size", function (d) {
+                        return Math.ceil(12 + 10 * d.prop) + "px"
+                    }).attr("opacity", 1)
+                })
+                .append("title")
+                .text(function (d, i) {
+                    return d.text;
+                });
+        }
+    </script>-->
+</body>
+
+</html>

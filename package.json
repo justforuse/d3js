@@ -1,0 +1,23 @@
+{
+  "name": "d3",
+  "version": "1.0.0",
+  "description": "",
+  "main": "d3.v3.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "lite-server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/justforuse/d3js.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/justforuse/d3js/issues"
+  },
+  "homepage": "https://github.com/justforuse/d3js#readme",
+  "devDependencies": {
+    "lite-server": "^2.3.0"
+  }
+}
