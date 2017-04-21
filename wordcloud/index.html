@@ -9,6 +9,7 @@
     <script src="angular.js"></script>
     <script src="../d3.v3.js"></script>
     <script src="d3.layout.cloud.js"></script>
+    <script src="d3-transform.js"></script>
     <style>
         #cloud {
             height: 500px;
@@ -31,7 +32,6 @@
                 fill: red;
             }
         }
-        /* Now include a version for older webkit browsers */
         
         @-webkit-keyframes someAnimationNameImadeUp {
             0% {
@@ -68,6 +68,11 @@
                     },
                     // template:"<div></div>",
                     link: function (scope, element, attr, ctrl) {
+                        d3.selection.prototype.getTransition = function () {
+                            if (this[0][0].__transition__) {
+                                return this[0][0].__transition__[1];
+                            } else return undefined;
+                        }
                         var color = d3.scale.category10();
                         function init() {
                             d3.select(element[0]).html("");
@@ -83,6 +88,7 @@
 
                         }
 
+
                         function draw(words) {
                             console.log("draw");
                             d3.select(element[0])
@@ -97,6 +103,7 @@
                                 .data(words)
                                 .enter()
                                 .append("text")
+                                .classed("word-cloud-text", true)
                                 .style("font-size", function (d) {
                                     return Math.ceil(6 + 30 * d.prop)
                                 })
@@ -115,24 +122,80 @@
                                 })
                                 .on("click", function (d) {
                                     console.log(d);
+
+
                                 })
-                                .on("mouseover", function () {
-                                    d3.select(this).classed("mycircle", true)
-                                        .transition().style("font-size", function (d) {
-                                            return Math.ceil(20 + 10 * d.prop) + "px"
-                                        }).attr("opacity", .5)
+                                .on("mouseenter", function () {
+                                    d3.select(this)
+                                        .classed("mycircle", true)
+                                        .getTransition()
+                                        .transition()
+                                        // .attr("transform", function () {
+                                        //     var t = d3.transform(d3.select(this).attr("transform"));
+                                        //     var x = t.translate[0];
+                                        //     var y = t.translate[1];
+                                        //     return d3.svg.transform()
+                                        //         .translate(x - 5, y - 5)();
+
+                                        // })
+                                        .style("font-size", function (d) {
+                                            return Math.ceil(11 + 30 * d.prop) + "px"
+                                        })
+                                        .attr("opacity", .5)
                                 }).on("mouseout", function () {
-                                    d3.select(this).transition().style("font-size", function (d) {
-                                        return Math.ceil(16 + 10 * d.prop) + "px"
-                                    }).attr("opacity", 1)
+                                    d3.select(this)
+                                        .classed("mycircle", false)
+                                        .getTransition()
+                                        .transition()
+                                        // .attr("transform", function () {
+                                        //     var t = d3.transform(d3.select(this).attr("transform"));
+                                        //     var x = t.translate[0];
+                                        //     var y = t.translate[1];
+                                        //     return d3.svg.transform()
+                                        //         .translate(x + 5, y + 5)();
+
+                                        // })
+                                        .style("font-size", function (d) {
+                                            return Math.ceil(6 + 30 * d.prop) + "px"
+                                        }).attr("opacity", 1)
                                 })
                                 .append("title")
                                 .text(function (d, i) {
                                     return d.text;
                                 });
+
+                            timeForTimeline();
                         }
 
                         init();
+
+                        function timeForTimeline() {
+                            var wordCloudText = d3.selectAll('.word-cloud-text')
+                                .each(repeat);
+
+
+
+                            function repeat() {
+                                d3.select(this)
+                                    .transition()
+                                    .duration(1000)
+                                    .ease("ease-in-out")
+                                    .attr({
+                                        'x': Math.round(Math.random() * 10),
+                                        'y': Math.round(Math.random() * 10)
+                                    })
+                                    .transition()
+                                    .duration(1000)
+                                    .ease("ease-in-out")
+                                    .attr({
+                                        'x': Math.round(Math.random() * 10),
+                                        'y': Math.round(Math.random() * 10)
+                                    })
+                                    .each("end", repeat);
+                            };
+                        };
+
+
                         scope.$watchCollection("wordData", function () {
                             console.log("data changed");
                             init();
@@ -232,7 +295,7 @@
                         text: "medium",
                         prop: 0.5
                     }
-                ];
+                ].slice(0, 3);
                 console.log($scope.data.length);
                 $scope.addData = function () {
                     $scope.data.push({
