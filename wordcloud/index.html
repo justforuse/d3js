@@ -9,6 +9,7 @@
     <script src="angular.js"></script>
     <script src="../d3.v3.js"></script>
     <script src="d3.layout.cloud.js"></script>
+    <script src="d3-transform.js"></script>
     <style>
         #cloud {
             height: 500px;
@@ -19,7 +20,7 @@
                 fill: red;
             }
             25% {
-                fill: yellow;
+                fill: #ff8000;
             }
             50% {
                 fill: blue;
@@ -31,14 +32,12 @@
                 fill: red;
             }
         }
-        /* Now include a version for older webkit browsers */
-        
-        @-webkit-keyframes someAnimationNameImadeUp {
+        /*@-webkit-keyframes someAnimationNameImadeUp {
             0% {
                 fill: red;
             }
             25% {
-                fill: yellow;
+                fill: #ff8000;
             }
             50% {
                 fill: blue;
@@ -49,12 +48,23 @@
             100% {
                 fill: red;
             }
-        }
+        }*/
         
         .mycircle {
-            animation: someAnimationNameImadeUp 5s infinite;
-            -webkit-animation: someAnimationNameImadeUp 5s infinite;
+            animation: someAnimationNameImadeUp 3s infinite;
+            -webkit-animation: someAnimationNameImadeUp 3s infinite;
             /* also need a webkit when applying CSS3 animations */
+        }
+        
+        .word-cloud-text {
+            transition: all .3s linear;
+        }
+        
+        .word-cloud-text:hover {
+            font-size: 40px !important;
+            /*transform: scale(1.1);*/
+            animation: someAnimationNameImadeUp 3s infinite;
+            -webkit-animation: someAnimationNameImadeUp 3s infinite;
         }
     </style>
     <script>
@@ -68,6 +78,11 @@
                     },
                     // template:"<div></div>",
                     link: function (scope, element, attr, ctrl) {
+                        d3.selection.prototype.getTransition = function () {
+                            if (this[0][0].__transition__) {
+                                return this[0][0].__transition__[1];
+                            } else return undefined;
+                        }
                         var color = d3.scale.category10();
                         function init() {
                             d3.select(element[0]).html("");
@@ -83,20 +98,22 @@
 
                         }
 
+
                         function draw(words) {
                             console.log("draw");
                             d3.select(element[0])
                                 .append("svg")
                                 // .attr("preserveAspectRatio", "xMidYMid meet")
                                 // .attr("viewBox", "0 0 500 500")
-                                .attr("width", 850)
-                                .attr("height", 350)
+                                .attr("width", 800)
+                                .attr("height", 400)
                                 .append("g")
-                                .attr("transform", "translate(250,250)")
+                                .attr("transform", "translate(400,200)")
                                 .selectAll("text")
                                 .data(words)
                                 .enter()
                                 .append("text")
+                                .classed("word-cloud-text", true)
                                 .style("font-size", function (d) {
                                     return Math.ceil(6 + 30 * d.prop)
                                 })
@@ -113,136 +130,232 @@
                                 .text(function (d) {
                                     return d.text;
                                 })
+                                .style("text-anchor", "middle")
                                 .on("click", function (d) {
                                     console.log(d);
+
+
                                 })
-                                .on("mouseover", function () {
-                                    d3.select(this).classed("mycircle", true)
-                                        .transition().style("font-size", function (d) {
-                                            return Math.ceil(20 + 10 * d.prop) + "px"
-                                        }).attr("opacity", .5)
-                                }).on("mouseout", function () {
-                                    d3.select(this).transition().style("font-size", function (d) {
-                                        return Math.ceil(16 + 10 * d.prop) + "px"
-                                    }).attr("opacity", 1)
+                                .on("mouseenter", function () {
+                                    d3.select(this)
+                                        .classed("mycircle", true)
+                                        .transition()
+                                        .each("end", function repeat() {
+                                            d3.select(this)
+                                                .transition()
+                                                .duration(1000)
+                                                .ease("ease-in-out")
+                                                .attr({
+                                                    'x': Math.round(Math.random() * 10),
+                                                    'y': Math.round(Math.random() * 10)
+                                                })
+                                                .transition()
+                                                .duration(1000)
+                                                .ease("ease-in-out")
+                                                .attr({
+                                                    'x': Math.round(Math.random() * 10),
+                                                    'y': Math.round(Math.random() * 10)
+                                                })
+                                                .each("end", repeat);
+                                        });
+                            // .getTransition()
+                            // .transition()
+                            // .attr("transform", function () {
+                            //     var t = d3.transform(d3.select(this).attr("transform"));
+                            //     var x = t.translate[0];
+                            //     var y = t.translate[1];
+                            //     return d3.svg.transform()
+                            //         .translate(x - 5, y - 5)();
+
+                            // })
+                            // .style("font-size", function (d) {
+                            //     return Math.ceil(11 + 30 * d.prop) + "px"
+                            // })
+                            // .attr("opacity", .5)
+                        }).on("mouseout", function () {
+                            d3.select(this)
+                                .classed("mycircle", false)
+                                // .getTransition()
+                                .transition()
+                                .each("end", function(){
+
                                 })
-                                .append("title")
-                                .text(function (d, i) {
-                                    return d.text;
-                                });
+                                // .attr("transform", function () {
+                                //     var t = d3.transform(d3.select(this).attr("transform"));
+                                //     var x = t.translate[0];
+                                //     var y = t.translate[1];
+                                //     return d3.svg.transform()
+                                //         .translate(x + 5, y + 5)();
+
+                                // })
+                                // .style("font-size", function (d) {
+                                //     return Math.ceil(6 + 30 * d.prop) + "px"
+                                // }).attr("opacity", 1)
+                        })
+            .append("title")
+            .text(function (d, i) {
+                return d.text;
+            });
+
+                            // timeForTimeline();
                         }
 
-                        init();
-                        scope.$watchCollection("wordData", function () {
-                            console.log("data changed");
-                            init();
-                        })
+        init();
+
+        function repeat() {
+            d3.select(this)
+                .transition()
+                .ease("ease-in-out")
+                .attr({
+                    'x': Math.round(Math.random() * 20),
+                    'y': Math.round(Math.random() * 10)
+                })
+                .transition()
+                .duration(1000)
+                .ease("ease-in-out")
+                .attr({
+                    'x': Math.round(Math.random() * 20),
+                    'y': Math.round(Math.random() * 10)
+                })
+                .each("end", repeat);
+        };
+        function timeForTimeline() {
+            var wordCloudText = d3.selectAll('.word-cloud-text')
+                .each(repeat);
+
+
+
+            function repeat() {
+                d3.select(this)
+                    .transition()
+                    .duration(1000)
+                    .ease("ease-in-out")
+                    .attr({
+                        'x': Math.round(Math.random() * 10),
+                        'y': Math.round(Math.random() * 10)
+                    })
+                    .transition()
+                    .duration(1000)
+                    .ease("ease-in-out")
+                    .attr({
+                        'x': Math.round(Math.random() * 10),
+                        'y': Math.round(Math.random() * 10)
+                    })
+                    .each("end", repeat);
+            };
+        };
+
+
+        scope.$watchCollection("wordData", function () {
+            console.log("data changed");
+            init();
+        })
                     }
                 }
             })
             .controller("ctrl", function ($scope) {
-                $scope.data = [
-                    {
-                        text: "max",
-                        prop: 0.9
+            $scope.data = [
+                {
+                    text: "max",
+                    prop: 0.9
 
-                    },
-                    {
-                        text: "medium",
-                        prop: 0.5
-                    },
-                    {
-                        text: "max",
-                        prop: 0.9
+                },
+                {
+                    text: "medium",
+                    prop: 0.5
+                },
+                {
+                    text: "max",
+                    prop: 0.9
 
-                    },
-                    {
-                        text: "medium",
-                        prop: 0.5
-                    },
-                    {
-                        text: "max",
-                        prop: 0.9
+                },
+                {
+                    text: "medium",
+                    prop: 0.5
+                },
+                {
+                    text: "max",
+                    prop: 0.9
 
-                    },
-                    {
-                        text: "medium",
-                        prop: 0.5
-                    },
-                    {
-                        text: "min",
-                        prop: 0.1
+                },
+                {
+                    text: "medium",
+                    prop: 0.5
+                },
+                {
+                    text: "min",
+                    prop: 0.1
 
-                    },
-                    {
-                        text: "medium",
-                        prop: 0.5
-                    },
-                    {
-                        text: "min",
-                        prop: 0.1
+                },
+                {
+                    text: "medium",
+                    prop: 0.5
+                },
+                {
+                    text: "min",
+                    prop: 0.1
 
-                    },
-                    {
-                        text: "medium",
-                        prop: 0.5
-                    },
-                    {
-                        text: "min",
-                        prop: 0.1
+                },
+                {
+                    text: "medium",
+                    prop: 0.5
+                },
+                {
+                    text: "min",
+                    prop: 0.1
 
-                    },
-                    {
-                        text: "medium",
-                        prop: 0.5
-                    },
-                    {
-                        text: "min",
-                        prop: 0.1
+                },
+                {
+                    text: "medium",
+                    prop: 0.5
+                },
+                {
+                    text: "min",
+                    prop: 0.1
 
-                    },
-                    {
-                        text: "medium",
-                        prop: 0.5
-                    },
-                    {
-                        text: "min",
-                        prop: 0.1
+                },
+                {
+                    text: "medium",
+                    prop: 0.5
+                },
+                {
+                    text: "min",
+                    prop: 0.1
 
-                    },
-                    {
-                        text: "medium",
-                        prop: 0.5
-                    },
-                    {
-                        text: "min",
-                        prop: 0.1
+                },
+                {
+                    text: "medium",
+                    prop: 0.5
+                },
+                {
+                    text: "min",
+                    prop: 0.1
 
-                    },
-                    {
-                        text: "medium",
-                        prop: 0.5
-                    },
-                    {
-                        text: "min",
-                        prop: 0.1
+                },
+                {
+                    text: "medium",
+                    prop: 0.5
+                },
+                {
+                    text: "min",
+                    prop: 0.1
 
-                    },
-                    {
-                        text: "medium",
-                        prop: 0.5
-                    }
-                ];
-                console.log($scope.data.length);
-                $scope.addData = function () {
-                    $scope.data.push({
-                        text: "min",
-                        prop: 0.1
-                    })
-
-                    console.log($scope.data.length);
+                },
+                {
+                    text: "medium",
+                    prop: 0.5
                 }
-            })
+            ].slice(0, 3);
+            console.log($scope.data.length);
+            $scope.addData = function () {
+                $scope.data.push({
+                    text: "min",
+                    prop: 0.1
+                })
+
+                console.log($scope.data.length);
+            }
+        })
     </script>
 
 </head>
