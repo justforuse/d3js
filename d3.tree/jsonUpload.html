@@ -93,7 +93,10 @@
             }
             else {
                 file = input.files[0];
-
+                if(file.name.indexOf(".json") == -1){
+                    alert("Please choose json file!");
+                    return false;
+                }
                 if (file) {
                     var reader = new FileReader();
                     reader.readAsText(file, "UTF-8");
@@ -274,83 +277,7 @@
                 "translate(" + d3.event.translate + ")"
                 + " scale(" + d3.event.scale + ")");
         }
-        function draw(data) {
-            console.log(data);
-            var nodes = cluster.nodes(data);
-            var links = cluster.links(nodes);
-
-            var diagonal = d3.svg.diagonal().projection(function (d) {
-                return [d.y, d.x];
-            })
-
-            var svg = d3.select("body").append("svg")
-                .attr("width", width)
-                .attr("height", height)
-                .append("g")
-                .attr("transform", "translate(40,0)")
-
-            //link 用来画线
-            var link = svg.selectAll(".link").data(links)
-                .enter()
-                .append("path")
-                .attr("class", "link")
-                .attr("d", diagonal);
-            //用来画点 点和线的顺序可以互换，但是线会覆盖在点上！！
-            var node = svg.selectAll(".node")
-                .data(nodes)
-                .enter()
-                .append("g")
-                .attr("class", "node")
-                .attr("transform", function (d) {
-                    return "translate(" + d.y + "," + d.x + ")";
-                })
-                .on("mouseover", function (d, i) {
-                    d3.select(this)
-                        .attr("fill", "yellow");
-                })
-                .on("mouseout", function (d, i) {
-                    d3.select(this)
-                        .transition()
-                        .duration(500)
-                        .attr("fill", "red");
-                })
-                .on("click", function (d) {
-
-                    if (d.children) {
-                        d._children = d.children;
-                        d.children = null;
-                    } else if (d._children) {
-                        d.children = d._children;
-                        d._children = null;
-                    }
-                    draw(d);
-                })
-
-
-            node.append("circle")
-                .attr("r", 4.5)
-
-            node.append("text")
-                .attr("dx", function (d) {
-                    return d.children ? -8 : 8;
-                })
-                .attr("dy", 3)
-                .style("text-anchor", function (d) {
-                    //设置anchor的位置在文本的末尾还是开头
-                    return d.children ? "end" : "start";
-                })
-                .text(function (d) {
-                    return d.name;
-                })
-        }
-
-        function bodyAppend(tagName, innerHTML) {
-            var elm;
-
-            elm = document.createElement(tagName);
-            elm.innerHTML = innerHTML;
-            document.body.appendChild(elm);
-        }
+        
     </script>
 </body>
 
