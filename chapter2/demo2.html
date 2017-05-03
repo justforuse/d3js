@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="../d3.v3.js"></script>
+</head>
+
+<body>
+    <div id="vizcontainer">
+        <svg id="svg1" style="width:500px;height:500px;border:1px lightgray solid;" />
+        <svg id="svg2" style="width:500px;height:500px;border:1px lightgray solid;" />
+    </div>
+    <script>
+        d3.csv("cities.csv", function (data) {
+            var max = d3.max(data, function(d){
+                return +d.population;
+            })
+            var min = d3.min(data, function(d){
+                return +d.population;
+            })
+            var mean = d3.mean(data, function(d){
+                return +d.population;
+            })
+            var yScale = d3.scale.linear()
+                .domain([0, max])
+                .range([0, 400,500])
+                .clamp(true);
+            d3.select("#svg1")
+                .selectAll("rect")
+                .data(data)
+                .enter()
+                .append("rect")
+                .attr("x", function (d, i) {
+                    return i * 60;
+                })
+                .attr("y", function (d, i) {
+                    return 500 - yScale(d.population);
+                })
+                .attr("width", 50)
+                .attr("height", function (d) {
+                    return yScale(d.population);
+                })
+                .style("fill", "blue")
+                .style("stroke", "red")
+                .style("stroke-width", "1px")
+                .style("opacity", .25);
+        })
+
+        // tweets
+        d3.json("tweets.json", function(d){
+            var data = d.tweets;
+            var nestedData = d3.nest()
+                .key(function(el){
+                    return el.user
+                })
+                .entries(data)
+            nestedData.forEach(function(d, i){
+                d.counts = d.values.length;
+            })
+            var max = d3.max(nestedData, function(d){
+                return +d.counts;
+            })
+            
+            var yScale = d3.scale.linear()
+                .domain([0, max])
+                .range([0, 500])
+                .clamp(true);
+            d3.select("#svg2")
+                .selectAll("rect")
+                .data(nestedData)
+                .enter()
+                .append("rect")
+                .attr("x", function (d, i) {
+                    return i * 60;
+                })
+                .attr("y", function (d, i) {
+                    return 500 - yScale(d.counts);
+                })
+                .attr("width", 50)
+                .attr("height", function (d) {
+                    return yScale(d.counts);
+                })
+                .style("fill", "blue")
+                .style("stroke", "red")
+                .style("stroke-width", "1px")
+                .style("opacity", .25);
+        })
+    </script>
+</body>
+
+</html>
