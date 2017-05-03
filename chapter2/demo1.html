@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="../d3.v3.js"></script>
+</head>
+<body>
+    <script>
+        d3.csv("cities.csv", function(d){
+            console.log(d);
+            d3.select("body").selectAll("div.cities")
+                .data(d)
+                .enter()
+                .append("div")
+                .classed("cities",true)
+                .html(function(d, i){
+                    return i +": " + d.label;
+                })
+        })
+
+        var line = d3.scale.linear()
+            .domain([5000, 100000]) //实际数据值的范围(x)
+            .range([0, 500]); //绘制参数值的范围(y)
+
+        console.log(line(5000));
+        console.log(line(1000));
+        console.log(line(50000));
+        // 根据y值 计算x值
+        console.log(line.invert(500));
+
+        var color = d3.scale.linear()
+            .domain([5000, 100000]) //实际数据值的范围(x)
+            .range(["blue", "red"]); //绘制颜色值的范围(y)
+
+        console.log(color(5000));
+        console.log(color(1000));
+        console.log(color(50000));
+        // invert只支持数值参数，返回NaN
+        console.log(color.invert(color(50000)));
+
+        // 评分 quantile  (分段函数, 区间个数)
+        var quantile = d3.scale.quantile()
+            .domain([5000, 100000])
+            .range([0,1,2])
+
+        console.log(quantile(5000));
+        console.log(quantile(1000));
+        console.log(quantile(50000));
+        console.log(quantile(60000));
+        console.log(quantile(70000));
+
+        //合并 嵌套 分层
+        d3.json("tweets.json", function(d){
+            console.log(d.tweets);
+            var nestedTweets = d3.nest()
+                .key(function(el){
+                    return el.user
+                })
+                .entries(d.tweets);
+
+            console.log(nestedTweets);
+        })
+    </script>
+</body>
+</html>
