@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
@@ -27,13 +28,7 @@
             stroke: #ccc;
             stroke-width: 1.5px;
         }
-        
-        body {
-            overflow: hidden;
-        }
     </style>
-</head>
-
 </head>
 
 <body>
@@ -63,7 +58,7 @@
                 return [d.x + rectW / 2, d.y + rectH / 2];
             });
 
-        var svg = d3.select("#body").append("svg").attr("width", 1000).attr("height", 1000)
+        var svg = d3.select("#body").html("").append("svg").attr("width", 1000).attr("height", 1000)
             .call(zm = d3.behavior.zoom().scaleExtent([1, 3]).on("zoom", redraw)).append("g")
             .attr("transform", "translate(" + 350 + "," + 20 + ")");
 
@@ -93,7 +88,7 @@
             }
             else {
                 file = input.files[0];
-                if(file.name.indexOf(".json") == -1){
+                if (file.name.indexOf(".json") == -1) {
                     alert("Please choose json file!");
                     return false;
                 }
@@ -277,7 +272,6 @@
                 "translate(" + d3.event.translate + ")"
                 + " scale(" + d3.event.scale + ")");
         }
-        
     </script>
 </body>
 
