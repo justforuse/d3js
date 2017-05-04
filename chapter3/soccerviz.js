@@ -25,14 +25,27 @@ function createSoccerViz() {
             var radiusScale = d3.scale.linear()
                 .domain([0, max])
                 .range([2, 20])
+            // var ybRamp = d3.scale.linear()
+            //     .interpolate(d3.interpolateHsl)
+            //     .domain([0, max])
+            //     .range(["yellow", "blue"])
 
+            // var tenColorScale = d3.scale
+            //     .category10(["UEFA", "CONMEBOL", "CAF", "AFC"])
+
+            var colorQuantize = d3.scale.quantize()
+                .domain([0, max])
+                .range(colorbrewer.Reds[5])
             d3.selectAll("g.overallG")
                 .select("circle")
                 .transition()
-                .delay(2000)
+                .delay(200)
                 .duration(1000)
                 .attr("r", function (d) {
                     return radiusScale(+d[datapoint]);
+                })
+                .style("fill", function(d){
+                    return colorQuantize(+d[datapoint])
                 })
         }
     })
@@ -104,7 +117,16 @@ function createSoccerViz() {
         teamG
             .select("text")
             .style("pointer-events", "none")
-
+        
+        teamG
+            .insert("image", "text") // 在第二个元素前添加
+            .attr("xlink:href", function(d){
+                return "Netherlands.png";
+            })
+            .attr("width", "45px")
+            .attr("height", "20px")
+            .attr("x", "-22")
+            .attr("y", "-10")
 
         // 获取实际DOM元素
         d3.select("circle")
