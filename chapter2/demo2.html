@@ -13,21 +13,22 @@
     <div id="vizcontainer">
         <svg id="svg1" style="width:500px;height:500px;border:1px lightgray solid;" />
         <svg id="svg2" style="width:500px;height:500px;border:1px lightgray solid;" />
+        <svg id="svg3" style="width:500px;height:500px;border:1px lightgray solid;" />
     </div>
     <script>
         d3.csv("cities.csv", function (data) {
-            var max = d3.max(data, function(d){
+            var max = d3.max(data, function (d) {
                 return +d.population;
             })
-            var min = d3.min(data, function(d){
+            var min = d3.min(data, function (d) {
                 return +d.population;
             })
-            var mean = d3.mean(data, function(d){
+            var mean = d3.mean(data, function (d) {
                 return +d.population;
             })
             var yScale = d3.scale.linear()
                 .domain([0, max])
-                .range([0, 400,500])
+                .range([0, 400, 500])
                 .clamp(true);
             d3.select("#svg1")
                 .selectAll("rect")
@@ -51,20 +52,20 @@
         })
 
         // tweets
-        d3.json("tweets.json", function(d){
+        d3.json("tweets.json", function (d) {
             var data = d.tweets;
             var nestedData = d3.nest()
-                .key(function(el){
+                .key(function (el) {
                     return el.user
                 })
                 .entries(data)
-            nestedData.forEach(function(d, i){
+            nestedData.forEach(function (d, i) {
                 d.counts = d.values.length;
             })
-            var max = d3.max(nestedData, function(d){
+            var max = d3.max(nestedData, function (d) {
                 return +d.counts;
             })
-            
+
             var yScale = d3.scale.linear()
                 .domain([0, max])
                 .range([0, 500])
@@ -88,6 +89,64 @@
                 .style("stroke", "red")
                 .style("stroke-width", "1px")
                 .style("opacity", .25);
+        })
+
+
+        d3.json("tweets.json", function (d) {
+            var nestedData = d.tweets;
+            // var nestedData = d3.nest()
+            //     .key(function (el) {
+            //         return el.user
+            //     })
+            //     .entries(data)
+            nestedData.forEach(function (d, i) {
+                d.impact = d.retweets.length + d.favorites.length;
+                d.tweetTime = new Date(d.timestamp);
+            })
+
+            var max = d3.max(nestedData, function (d) {
+                return d.impact;
+            })
+            var startEnd = d3.extent(nestedData, function (d) {
+                return d.tweetTime;
+            })
+            var timeRamp = d3.scale.linear().domain(startEnd).range([20, 480]);
+
+            var yScale = d3.scale.linear()
+                .domain([0, max])
+                .range([0, 500])
+            var radiusScale = d3.scale.linear().domain([0, max]).range([1, 20]);
+            var colorScale = d3.scale.linear().domain([0, max]).range(["white", "#990000"]);
+            var filteredData = nestedData.filter(function (el) {
+                return el.impact > 0
+            }
+            );
+            var tweetG = d3.select("#svg3")
+                .selectAll("g")
+                .data(filteredData, function (d) {
+                    console.log(d);
+                    return JSON.stringify(d);
+                })
+                .enter()
+                .append("g")
+                .attr("transform", function (d) {
+                    return "translate(" + timeRamp(d.tweetTime) + "," + (500 - yScale(d.impact)) + ")";
+                })
+
+            tweetG.append("circle")
+                .attr("r", function (d, i) {
+                    return radiusScale(d.impact);
+                })
+                .style("fill", function (d) {
+                    return colorScale(d.impact);
+                })
+                .style("stroke", "red")
+                .style("stroke-width", "1px");
+
+            tweetG.append("text")
+                .text(function (d) {
+                    return d.user + "-" + d.tweetTime.getHours();
+                })
         })
     </script>
 </body>
