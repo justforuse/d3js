@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="../d3.v3.js"></script>
+    <style>
+        line {
+            shape-rendering: crispEdges;
+            stroke: #000;
+        }
+
+        text {
+            font-size: 14px;
+        }
+
+        path.domain {
+            fill: none;
+            stroke: black;
+        }
+
+        .range {
+            stroke: black;
+            stroke-width: 3px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="viz">
+        <svg style="width:600px;height:600px;border:1px lightgray solid;" />
+    </div>
+
+    <script>
+        d3.csv("./tweetdata.csv", function (data) {
+            // xScale = d3.scale.linear().domain([1, 10.5]).range([20, 480]);
+            // yScale = d3.scale.linear().domain([0, 35]).range([480, 20]);
+            // xAxis = d3.svg.axis()
+            //     .scale(xScale)
+            //     .orient("bottom")
+            //     .tickSize(480)
+            //     .tickValues([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+            // d3.select("svg").append("g").attr("id", "xAxisG").call(xAxis);
+            xScale = d3.scale.linear()
+                .domain([1, 10.5])
+                .range([20, 480])
+
+            yScale = d3.scale.linear()
+                .domain([0, 35])
+                .range([480, 20])
+
+            xAxis = d3.svg.axis()
+                .scale(xScale)
+                .orient("bottom")
+                .tickSize(480)
+
+            d3.select("svg")
+                .append("g")
+                .attr("id", "xAxisG")
+                .call(xAxis);
+
+            yAxis = d3.svg.axis()
+                .scale(yScale)
+                .orient("right")
+                .tickSize(480)
+
+            d3.select("svg")
+                .append("g")
+                .attr("id", "yAxisG")
+                .call(yAxis)
+
+            d3.select("svg")
+                .selectAll("circle.retweets")
+                .data(data)
+                .enter()
+                .append("circle")
+                .attr("class", "retweets")
+                .attr("r", 5)
+                .attr("cx", function(d){
+                    return xScale(d.day)
+                })
+                .attr("cy", function(d){
+                    return yScale(d.retweets);
+                })
+
+            d3.select("svg")
+                .selectAll("circle.favorites")
+                .data(data)
+                .enter()
+                .append("circle")
+                .attr("class", "favorites")
+                .style("fill", "grey")
+                .attr("r", 5)
+                .attr("cx", function(d){
+                    return xScale(d.day)
+                })
+                .attr("cy", function(d){
+                    return yScale(d.favorites);
+                })
+
+            var tweetLine = d3.svg.line()
+                .x(function(d){
+                    return xScale(d.day);
+                })
+                .y(function(d){
+                    return yScale(d.retweets)
+                })
+
+            d3.select("svg")
+                .append("path")
+                .attr("d", tweetLine(data))
+                .style("fill", "none")
+                .style("stroke", "darkred")
+                .style("stroke-width", "3px")
+        })
+    </script>
+</body>
+
+</html>

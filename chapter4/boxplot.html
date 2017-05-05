@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="../d3.v3.js"></script>
+    <style>
+        line {
+            shape-rendering: crispEdges;
+            stroke: #000;
+        }
+
+        text {
+            font-size: 14px;
+        }
+
+        path.domain {
+            fill: none;
+            stroke: black;
+        }
+
+        .range {
+            stroke: black;
+            stroke-width: 3px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="viz">
+        <svg style="width:600px;height:600px;border:1px lightgray solid;" />
+    </div>
+
+    <script>
+        d3.csv("./boxplots.csv", function (data) {
+            var xScale = d3.scale.linear()
+                .domain([1, 8])
+                .range([20, 470])
+            var yScale = d3.scale.linear()
+                .domain([0, 100])
+                .range([480, 20])
+
+            yAxis = d3.svg.axis()
+                .scale(yScale)
+                .orient("right")
+                .ticks(8)
+                .tickSize(-470)
+
+            d3.select("svg")
+                .append("g")
+                .attr("transform", "translate(470, 0)")
+                .attr("id", "yAxisG")
+                .call(yAxis)
+
+            xAxis = d3.svg.axis()
+                .scale(xScale)
+                .orient("bottom")
+                .tickSize(-470)
+                .tickValues(d3.range(1, 8))
+
+            d3.select("svg")
+                .append("g")
+                .attr("transform", "translate(0, 480)")
+                .call(xAxis)
+
+
+
+            d3.select("svg").selectAll("g.box")
+                .data(data).enter()
+                .append("g")
+                .attr("class", "box")
+                .attr("transform", function (d) {
+                    return "translate(" + xScale(d.day) + "," + yScale(d.median) + ")";
+                }).each(function (d, i) {
+                    d3.select(this)
+                        .append("line")
+                        .attr("class", "range")
+                        .attr("x1", 0)
+                        .attr("y1", function (d) {
+                            return yScale(d.max) - yScale(d.median)
+                        })
+                        .attr("x2", 0)
+                        .attr("y2", function (d) {
+                            return yScale(d.min) - yScale(d.median)
+                        })
+                    d3.select(this)
+                        .append("line")
+                        .attr("class", "max")
+                        .attr("x1", -10)
+                        .attr("x2", 10)
+                        .attr("y1", function (d) {
+                            return yScale(d.max) - yScale(d.median)
+                        })
+                        .attr("y2", function (d) {
+                            return yScale(d.max) - yScale(d.median)
+                        })
+                        .style("stroke-width", "3px")
+
+                    d3.select(this)
+                        .append("line")
+                        .attr("class", "min")
+                        .attr("x1", -10)
+                        .attr("x2", 10)
+                        .attr("y1", function (d) {
+                            return yScale(d.min) - yScale(d.median)
+                        })
+                        .attr("y2", function (d) {
+                            return yScale(d.min) - yScale(d.median)
+                        })
+                        .style("stroke-width", "3px")
+
+                    d3.select(this)
+                        .append("rect")
+                        .style("fill", "white")
+                        .style("stroke", "black")
+                        .attr("x", -10)
+                        .attr("y", function (d, i) {
+                            return yScale(d.q3) - yScale(d.median);
+                        })
+                        .attr("width", 20)
+                        .attr("height", yScale(d.q1) - yScale(d.q3))
+
+                    d3.select(this)
+                        .append("line")
+                        .attr("class", "tweets")
+                        .attr("x1", -10)
+                        .attr("x2", 10)
+                        .attr("y1", 0)
+                        .attr("y2", 0)
+                        .style("stroke-width", "3px")
+                        .style("stroke", "darkgray");
+
+
+                });
+        })
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="../d3.v3.js"></script>
+    <style>
+        line {
+            shape-rendering: crispEdges;
+            stroke: #000;
+        }
+        text{
+            font-size: 14px;
+        }
+        path.domain {
+            fill: none;
+            stroke: black;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="viz">
+        <svg style="width:600px;height:600px;border:1px lightgray solid;" />
+    </div>
+
+    <script>
+        var scatterData = [
+            { friends: 5, salary: 22000 },
+            { friends: 3, salary: 18000 },
+            { friends: 10, salary: 88000 },
+            { friends: 0, salary: 180000 },
+            { friends: 27, salary: 56000 },
+            { friends: 8, salary: 74000 }
+        ];
+        var maxFriend = d3.max(scatterData, function (d) {
+            return d.friends;
+        })
+        var maxSalary = d3.max(scatterData, function (d) {
+            return d.salary;
+        })
+        var friendsScale = d3.scale.linear()
+            .domain([0, maxFriend])
+            .range([0, 500])
+
+        var SalaryScale = d3.scale.linear()
+            .domain([0, maxSalary])
+            .range([0, 500])
+
+        var yAxis = d3.svg.axis()
+            .scale(friendsScale)
+            .orient("right")
+            .tickSize(500)
+            .ticks(16)
+
+        var xAxis = d3.svg.axis()
+            .scale(SalaryScale)
+            .orient("bottom")
+            .tickSize(500) // tick的长度
+            .ticks(4)   // tick 数量
+
+        d3.select("svg")
+            .append("g")
+            .attr("id", "yAxisG")
+            .call(yAxis)
+        d3.select("svg")
+            .append("g")
+            .attr("id", "xAxisG")
+            .call(xAxis)
+
+        d3.select("svg")
+            .selectAll("circle")
+            .data(scatterData)
+            .enter()
+            .append("circle")
+            .attr("r", 5)
+            .attr("cx", function (d, i) {
+                return SalaryScale(d.salary);
+            })
+            .attr("cy", function (d) {
+                return friendsScale(d.friends);
+            })
+        
+    </script>
+</body>
+
+</html>
