@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="../d3.v3.js"></script>
+    <style>
+        line {
+            shape-rendering: crispEdges;
+            stroke: #000;
+        }
+
+        text {
+            font-size: 14px;
+        }
+
+        path.domain {
+            fill: none;
+            stroke: black;
+        }
+
+        .range {
+            stroke: black;
+            stroke-width: 3px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="viz">
+        <svg style="width:600px;height:500px;border:1px lightgray solid;" />
+    </div>
+
+    <script>
+        d3.json("tweets.json", function (data) {
+            var tweetsData = data.tweets;
+            var xScale = d3.scale.linear()
+                .domain([0, 5])
+                .range([0, 500])
+
+            var yScale = d3.scale.linear()
+                .domain([0, 10])
+                .range([400, 0])
+
+            var xAxis = d3.svg.axis()
+                .scale(xScale)
+                .ticks(5)
+                .orient("bottom")
+
+            var histoChart = d3.layout.histogram();
+
+            // 按喜欢的个数分在（0,6）区间上
+            histoChart.bins(d3.range(0, 6))
+                .value(function (d) {
+                    return d.favorites.length;
+                })
+            var histoData = histoChart(tweetsData);
+            d3.select("svg")
+                .selectAll("rect")
+                .data(histoData)
+                .enter()
+                .append("rect")
+                .attr("x", function (d) {
+                    return xScale(d.x);
+                })
+                .attr("y", function (d) {
+                    return yScale(d.y);
+                })
+                .attr("width", function (d) {
+                    return xScale(histoData[0].dx) - 2;
+                })
+                .attr("height", function (d) {
+                    return 400 - yScale(d.y)
+                })
+                .on("click", function () {
+                    histoChart.value(function (d) {
+                        return d.retweets.length;
+                    })
+                    histoData = histoChart(tweetsData);
+                    d3.selectAll("rect")
+                        .data(histoData)
+                        .transition()
+                        .attr("x", function (d) {
+                            return xScale(d.x);
+                        })
+                        .attr("y", function (d) {
+                            return yScale(d.y);
+                        })
+                        .attr("height", function (d) {
+                            return 400 - yScale(d.y)
+                        })
+                })
+            d3.select("svg")
+                .append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0, 400)")
+                .call(xAxis)
+
+            d3.select("g.axis")
+                .selectAll("text")
+                .attr("dx", 50)
+        })
+    </script>
+</body>
+
+</html>

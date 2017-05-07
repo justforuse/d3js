@@ -101,19 +101,73 @@
                     return yScale(d.favorites);
                 })
 
+            d3.select("svg")
+                .selectAll("circle.tweets")
+                .data(data)
+                .enter()
+                .append("circle")
+                .attr("class", "tweets")
+                .style("fill", "lightgrey")
+                .attr("r", 5)
+                .attr("cx", function(d){
+                    return xScale(d.day)
+                })
+                .attr("cy", function(d){
+                    return yScale(d.tweets);
+                })
+
+
+            //添加线 
+
+            // 深红色
             var tweetLine = d3.svg.line()
                 .x(function(d){
                     return xScale(d.day);
                 })
                 .y(function(d){
-                    return yScale(d.retweets)
+                    return yScale(d.tweets)
                 })
+                .interpolate("basis") //类似贝塞尔曲线
 
             d3.select("svg")
                 .append("path")
                 .attr("d", tweetLine(data))
                 .style("fill", "none")
                 .style("stroke", "darkred")
+                .style("stroke-width", "3px")
+
+            // 黑色
+            var retweetLine = d3.svg.line()
+                .x(function(d){
+                    return xScale(d.day);
+                })
+                .y(function(d){
+                    return yScale(d.retweets)
+                })
+                .interpolate("step") //类似脉冲
+
+            d3.select("svg")
+                .append("path")
+                .attr("d", retweetLine(data))
+                .style("fill", "none")
+                .style("stroke", "black")
+                .style("stroke-width", "3px")
+
+            // 灰色
+            var favoritesLine = d3.svg.line()
+                .x(function(d){
+                    return xScale(d.day);
+                })
+                .y(function(d){
+                    return yScale(d.favorites)
+                })
+                .interpolate("cardinal") //连接各个节点的平滑曲线
+
+            d3.select("svg")
+                .append("path")
+                .attr("d", favoritesLine(data))
+                .style("fill", "none")
+                .style("stroke", "grey")
                 .style("stroke-width", "3px")
         })
     </script>
