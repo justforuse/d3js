@@ -36,39 +36,41 @@
     <script>
         d3.json("tweets.json", function (data) {
             var nestedData = d3.nest()
-                .key(function(d){
+                .key(function (d) {
                     return d.user;
                 })
                 .entries(data.tweets)
             var packableTweets = {
-                id:"All Tweets",
-                value: nestedData
+                id: "All Tweets",
+                values: nestedData
             }
 
-            var depthScale = d3.scale.category10([0,1,2]);
+            var depthScale = d3.scale.category10([0, 1, 2]);
             var packChart = d3.layout.pack()
             packChart.size([500, 500])
-                .children(function(d){
+                .children(function (d) {
                     return d.values;
                 })
-                .value(function(d){
-                    return 1;
+                .value(function (d) {
+                    // 同级圆形之间的比例
+                    return d.favorites.length + d.retweets.length + 1;
                 })
+                .padding(20) //圆之间的距离 
             d3.select("svg")
                 .selectAll("circle")
                 .data(packChart(packableTweets))
                 .enter()
                 .append("circle")
-                .attr("r", function(d){
-                    return d.r;
+                .attr("r", function (d) {
+                    return d.r ;
                 })
-                .attr("cx", function(d){
+                .attr("cx", function (d) {
                     return d.x;
                 })
-                .attr("cy", function(d){
+                .attr("cy", function (d) {
                     return d.y;
                 })
-                .style("fill", function(d){
+                .style("fill", function (d) {
                     return depthScale(d.depth)
                 })
                 .style("stroke", "black")

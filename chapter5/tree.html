@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="../d3.v3.js"></script>
+</head>
+
+<body>
+    <div id="viz">
+        <svg style="width:600px;height:600px;border:1px lightgray solid;" />
+    </div>
+
+    <script>
+        // d3.layout.tree
+        //  d3.svg.diagonal to draw curved line
+        // d3.behaviour.zoom scroll up and down
+        d3.json("tweets.json", function (data) {
+            var nestedData = d3.nest()
+                .key(function (d) {
+                    return d.user;
+                })
+                .entries(data.tweets)
+            var packableTweets = {
+                id: "All Tweets",
+                values: nestedData
+            }
+
+            var treeChart = d3.layout.tree();
+            treeChart.size([200, 200])
+                .children(function (d) {
+                    return d.values;
+                })
+            var depthScale = d3.scale.category10([0, 1, 2]);
+            // var linkGenerator = d3.svg.diagonal();
+            // 横向展示
+            // linkGenerator.projection(function (d) {
+            //     return [d.y, d.x];
+            // })
+            var linkGenerator = d3.svg.diagonal.radial();
+            linkGenerator.projection(function(d){
+                return [d.y, d.x/180 * Math.PI];
+            })
+            d3.select("svg")
+                .append("g")
+                .attr("id", "treeG")
+                .attr("transform", "translate(200, 200)")
+                .selectAll("g")
+                .data(treeChart(packableTweets))
+                .enter()
+                .append("g")
+                .attr("class", "node")
+                .attr("transform", function (d) {
+                    // return "translate(" + d.y + "," + d.x + ")";
+                    return "rotate(" + (d.x-90) + ") translate(" + d.y + ")"; //旋转该g元素所在的坐标系 translate相当与横向移动
+                })
+            d3.selectAll("g.node")
+                .append("circle")
+                .attr("r", 10)
+                .style("fill", function (d) {
+                    return depthScale(d.depth);
+                })
+                .style("stroke", "white")
+                .style("stroke-width", "2px")
+
+            d3.selectAll("g.node")
+                .append("text")
+                .style("font-size", "12px")
+                .text(function (d) {
+                    return d.id || d.key || d.content;
+                })
+            d3.select("#treeG")
+                .selectAll("path")
+                .data(treeChart.links(treeChart(packableTweets)))
+                .enter()
+                .insert("path", "g")
+                .attr("d", linkGenerator)
+                .style("fill", "none")
+                .style("stroke", "black")
+                .style("stroke-width", "2px")
+
+            // zoom
+            treeZoom = d3.behavior.zoom();
+            treeZoom.on("zoom", function () {
+                var zoomTranslate = treeZoom.translate();
+                d3.select("g#treeG")
+                    .attr("transform", function () {
+                        return "translate(" + zoomTranslate[0] + "," + zoomTranslate[1] + ")";
+                    })
+
+            })
+            d3.select("svg")
+                .call(treeZoom)
+        })
+    </script>
+</body>
+
+</html>
