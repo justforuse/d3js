@@ -36,42 +36,23 @@
 
     <script>
         d3.csv("movies.csv", function (data) {
+            stackData = [];
             xScale = d3.scale.linear()
-                .domain([1, 10.5])
-                .range([20, 470])
+                .domain([0, 10])
+                .range([0, 500])
 
             yScale = d3.scale.linear()
-                .domain([0, 50])
-                .range([480, 20])
-            xAxis = d3.svg.axis()
-                .scale(xScale)
-                .orient("bottom")
-                .tickSize(480)
-                .tickValues(d3.range(1, 11))
+                .domain([0, 100])
+                .range([500, 0])
 
-            yAxis = d3.svg.axis()
-                .scale(yScale)
-                .orient("right")
-                .tickSize(470)
+            var fillColors = d3.scale.category10(["movie1", "movie2", "movie3", "movie4", "movie5", "movie6"])
 
-            d3.select("svg")
-                .append("g")
-                .attr("id", "xAxisG")
-                .call(xAxis)
 
-            d3.select("svg")
-                .append("g")
-                .attr("id", "yAxisG")
-                .call(yAxis)
-            var fillScale = d3.scale.linear()
-                .domain([0, 5])
-                .range(["lightgrey", "black"])
-            var n = 0;
-            var stackData = (function(data) {
+            var stackData = (function (data) {
                 var result = [];
                 // add names and null values
-                for(var m in data[0]){
-                    if(m !='day'){
+                for (var m in data[0]) {
+                    if (m != 'day') {
                         var tempObj = {
                             name: m,
                             values: []
@@ -80,15 +61,15 @@
                     }
                 }
                 for (var i = 0; i < data.length; i++) {
-                    for(var j in data[i]){
-                        if(j != 'day'){
-                            var tempRes = result.filter(function(d){
+                    for (var j in data[i]) {
+                        if (j != 'day') {
+                            var tempRes = result.filter(function (d) {
                                 return d.name == j;
                             })
 
                             tempRes[0].values.push({
-                                x:data[i]['day'],
-                                y:data[i][j]
+                                x: +data[i]['day'],
+                                y: +data[i][j]
                             })
                         }
                     }
@@ -96,58 +77,43 @@
 
                 return result;
             })(data)
-            // stackData = d3.nest()
-            //     .key(function (d) {
-            //         return d.day;
-            //     })
-            //     .entries(data)
 
-            console.log(stackData);
+            var stackArea = d3.svg.area()
+                .interpolate("basis")
+                .x(function (d) {
+                    return xScale(d.x);
+                })
+                .y0(function (d) {
+                    return yScale(d.y0);
+                })
+                .y1(function (d) {
+                    return yScale(d.y0 + d.y);
+                })
+
+
             stackLayout = d3.layout.stack()
+                .offset("silhouette")
+                .order("inside-out")
                 .values(function (d) {
                     return d.values;
                 })
-            // for (var x in data[0]) {
-            //     if (x !== "day") {
-            //         var movieArea = d3.svg.area()
-            //             .x(function (d) {
-            //                 return xScale(d.day);
-            //             })
-            //             .y(function (d) {
-            //                 return yScale(simpleStacking(d, x));
-            //             })
-            //             .y0(function (d) {
-            //                 return yScale(simpleStacking(d, x) - d[x]);
-            //             })
-            //             .interpolate("cardinal")
 
-            //         d3.select("svg")
-            //             .append("path")
-            //             .attr("d", movieArea(data))
-            //             .style("fill", fillScale(n))
-            //             .style("opacity", ".5")
-            //             .style("stroke", "none")
-            //             .style("stroke-width", "3px")
 
-            //         n++;
-
-            //     }
-            // }
+            d3.select("svg")
+                .selectAll("path")
+                .data(stackLayout(stackData))
+                .enter()
+                .append("path")
+                .style("fill", function (d) {
+                    return fillColors(d.name);
+                })
+                .attr("d", function (d) {
+                    return stackArea(d.values)
+                })
         })
-
-        function simpleStacking(data, attr) {
-            var newHeight = 0;
-            for (x in data) {
-                if (x != "day") {
-                    newHeight += parseInt(data[x]);
-                    if (x == attr) {
-                        break;
-                    }
-                }
-            }
-            return newHeight;
-        }
     </script>
+
+
 </body>
 
 </html>
