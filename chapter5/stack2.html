@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="../d3.v3.js"></script>
+    <style>
+        line {
+            shape-rendering: crispEdges;
+            stroke: #000;
+        }
+
+        text {
+            font-size: 14px;
+        }
+
+        path.domain {
+            fill: none;
+            stroke: black;
+        }
+
+        .range {
+            stroke: black;
+            stroke-width: 3px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="viz">
+        <svg style="width:600px;height:600px;border:1px lightgray solid;" />
+    </div>
+
+    <script>
+        d3.csv("movies.csv", function (data) {
+            stackData = [];
+            xScale = d3.scale.linear()
+                .domain([1, 10])
+                .range([20, 480])
+
+            yScale = d3.scale.linear()
+                .domain([0, 100])
+                .range([480, 0])
+
+            heightScale = d3.scale.linear()
+                .domain([0,100])
+                .range([0, 480])
+
+            // var xScale = d3.scale.linear()
+            //     .domain([1, 10])
+            //     .range([20, 440]);
+
+            // var yScale = d3.scale.linear()
+            //     .domain([0, 70])
+            //     .range([480, 0]);
+
+            // var heightScale = d3.scale.linear()
+            //     .domain([0, 70])
+            //     .range([0, 480]);
+
+            xAxis = d3.svg.axis()
+                .scale(xScale)
+                .orient("bottom")
+                .tickSize(480)
+                .tickValues(d3.range(1, 11))
+
+            yAxis = d3.svg.axis()
+                .scale(yScale)
+                .orient("right")
+                .tickSize(500)
+
+            d3.select("svg")
+                .append("g")
+                .attr("id", "xAxisG")
+                .call(xAxis)
+
+            d3.select("svg")
+                .append("g")
+                .attr("id", "yAxisG")
+                .call(yAxis)
+            var fillColors = d3.scale.category10(["movie1", "movie2", "movie3", "movie4", "movie5", "movie6"])
+
+
+            var stackData = (function (data) {
+                var result = [];
+                // add names and null values
+                for (var m in data[0]) {
+                    if (m != 'day') {
+                        var tempObj = {
+                            name: m,
+                            values: []
+                        }
+                        result.push(tempObj)
+                    }
+                }
+                for (var i = 0; i < data.length; i++) {
+                    for (var j in data[i]) {
+                        if (j != 'day') {
+                            var tempRes = result.filter(function (d) {
+                                return d.name == j;
+                            })
+
+                            tempRes[0].values.push({
+                                x: +data[i]['day'],
+                                y: +data[i][j]
+                            })
+                        }
+                    }
+                }
+
+                return result;
+            })(data)
+
+            var stackArea = d3.svg.area()
+                .interpolate("basis")
+                .x(function (d) {
+                    return xScale(d.x);
+                })
+                .y0(function (d) {
+                    return yScale(d.y0);
+                })
+                .y1(function (d) {
+                    return yScale(d.y0 + d.y);
+                })
+
+
+            stackLayout = d3.layout.stack()
+                // .offset("silhouette")
+                // .order("inside-out")
+                .values(function (d) {
+                    return d.values;
+                })
+
+
+            d3.select("svg")
+                .selectAll("g.bar")
+                .data(stackLayout(stackData))
+                .enter()
+                .append("g")
+                .attr("class", "bar")
+                .each(function (d) {
+
+                    d3.select(this)
+                        .selectAll("rect")
+                        .data(d.values)
+                        .enter()
+                        .append("rect")
+                        .attr("x", function (p) {
+                            return xScale(p.x) - 15;
+                        })
+                        .attr("y", function (p) {
+                            return yScale(p.y + p.y0)
+                        })
+                        .attr("height", function (p) {
+                            return heightScale(p.y);
+                        })
+                        .attr("width", 30)
+                        .style("fill", fillColors(d.name))
+                })
+        })
+    </script>
+
+
+</body>
+
+</html>
