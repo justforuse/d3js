@@ -14,7 +14,7 @@
         #cloud {
             height: 500px;
         }
-        
+
         @keyframes someAnimationNameImadeUp {
             0% {
                 fill: red;
@@ -49,17 +49,17 @@
                 fill: red;
             }
         }*/
-        
+
         .mycircle {
             animation: someAnimationNameImadeUp 3s infinite;
             -webkit-animation: someAnimationNameImadeUp 3s infinite;
             /* also need a webkit when applying CSS3 animations */
         }
-        
+
         .word-cloud-text {
             transition: all .3s linear;
         }
-        
+
         .word-cloud-text:hover {
             font-size: 40px !important;
             /*transform: scale(1.1);*/
@@ -158,204 +158,211 @@
                                                 })
                                                 .each("end", repeat);
                                         });
-                            // .getTransition()
-                            // .transition()
-                            // .attr("transform", function () {
-                            //     var t = d3.transform(d3.select(this).attr("transform"));
-                            //     var x = t.translate[0];
-                            //     var y = t.translate[1];
-                            //     return d3.svg.transform()
-                            //         .translate(x - 5, y - 5)();
+                                    // .getTransition()
+                                    // .transition()
+                                    // .attr("transform", function () {
+                                    //     var t = d3.transform(d3.select(this).attr("transform"));
+                                    //     var x = t.translate[0];
+                                    //     var y = t.translate[1];
+                                    //     return d3.svg.transform()
+                                    //         .translate(x - 5, y - 5)();
 
-                            // })
-                            // .style("font-size", function (d) {
-                            //     return Math.ceil(11 + 30 * d.prop) + "px"
-                            // })
-                            // .attr("opacity", .5)
-                        }).on("mouseout", function () {
-                            d3.select(this)
-                                .classed("mycircle", false)
-                                // .getTransition()
-                                .transition()
-                                .each("end", function(){
+                                    // })
+                                    // .style("font-size", function (d) {
+                                    //     return Math.ceil(11 + 30 * d.prop) + "px"
+                                    // })
+                                    // .attr("opacity", .5)
+                                }).on("mouseout", function () {
+                                    d3.select(this)
+                                        .classed("mycircle", false)
+                                        // .getTransition()
+                                        .transition()
+                                        .each("end", function () {
 
+                                        })
+                                    // .attr("transform", function () {
+                                    //     var t = d3.transform(d3.select(this).attr("transform"));
+                                    //     var x = t.translate[0];
+                                    //     var y = t.translate[1];
+                                    //     return d3.svg.transform()
+                                    //         .translate(x + 5, y + 5)();
+
+                                    // })
+                                    // .style("font-size", function (d) {
+                                    //     return Math.ceil(6 + 30 * d.prop) + "px"
+                                    // }).attr("opacity", 1)
                                 })
-                                // .attr("transform", function () {
-                                //     var t = d3.transform(d3.select(this).attr("transform"));
-                                //     var x = t.translate[0];
-                                //     var y = t.translate[1];
-                                //     return d3.svg.transform()
-                                //         .translate(x + 5, y + 5)();
-
-                                // })
-                                // .style("font-size", function (d) {
-                                //     return Math.ceil(6 + 30 * d.prop) + "px"
-                                // }).attr("opacity", 1)
-                        })
-            .append("title")
-            .text(function (d, i) {
-                return d.text;
-            });
+                                .append("title")
+                                .text(function (d, i) {
+                                    return d.text;
+                                });
 
                             // timeForTimeline();
                         }
 
-        init();
+                        init();
 
-        function repeat() {
-            d3.select(this)
-                .transition()
-                .ease("ease-in-out")
-                .attr({
-                    'x': Math.round(Math.random() * 20),
-                    'y': Math.round(Math.random() * 10)
-                })
-                .transition()
-                .duration(1000)
-                .ease("ease-in-out")
-                .attr({
-                    'x': Math.round(Math.random() * 20),
-                    'y': Math.round(Math.random() * 10)
-                })
-                .each("end", repeat);
-        };
-        function timeForTimeline() {
-            var wordCloudText = d3.selectAll('.word-cloud-text')
-                .each(repeat);
-
-
-
-            function repeat() {
-                d3.select(this)
-                    .transition()
-                    .duration(1000)
-                    .ease("ease-in-out")
-                    .attr({
-                        'x': Math.round(Math.random() * 10),
-                        'y': Math.round(Math.random() * 10)
-                    })
-                    .transition()
-                    .duration(1000)
-                    .ease("ease-in-out")
-                    .attr({
-                        'x': Math.round(Math.random() * 10),
-                        'y': Math.round(Math.random() * 10)
-                    })
-                    .each("end", repeat);
-            };
-        };
+                        function repeat() {
+                            d3.select(this)
+                                .transition()
+                                .ease("ease-in-out")
+                                .attr({
+                                    'x': Math.round(Math.random() * 20),
+                                    'y': Math.round(Math.random() * 10)
+                                })
+                                .transition()
+                                .duration(1000)
+                                .ease("ease-in-out")
+                                .attr({
+                                    'x': Math.round(Math.random() * 20),
+                                    'y': Math.round(Math.random() * 10)
+                                })
+                                .each("end", repeat);
+                        };
+                        function timeForTimeline() {
+                            var wordCloudText = d3.selectAll('.word-cloud-text')
+                                .each(repeat);
 
 
-        scope.$watchCollection("wordData", function () {
-            console.log("data changed");
-            init();
-        })
+
+                            function repeat() {
+                                d3.select(this)
+                                    .transition()
+                                    .duration(1000)
+                                    .ease("ease-in-out")
+                                    .attr({
+                                        'x': Math.round(Math.random() * 10),
+                                        'y': Math.round(Math.random() * 10)
+                                    })
+                                    .transition()
+                                    .duration(1000)
+                                    .ease("ease-in-out")
+                                    .attr({
+                                        'x': Math.round(Math.random() * 10),
+                                        'y': Math.round(Math.random() * 10)
+                                    })
+                                    .each("end", repeat);
+                            };
+                        };
+
+
+                        scope.$watchCollection("wordData", function () {
+                            console.log("data changed");
+                            d3.select("g")
+                                .selectAll("text")
+                                .transition()
+                                .style("opacity", 0)
+                            // .on("end", init())
+                            setTimeout(function(){
+                                init()
+                            }, 500);
+                        })
                     }
                 }
             })
             .controller("ctrl", function ($scope) {
-            $scope.data = [
-                {
-                    text: "max",
-                    prop: 0.9
+                $scope.data = [
+                    {
+                        text: "max",
+                        prop: 0.9
 
-                },
-                {
-                    text: "medium",
-                    prop: 0.5
-                },
-                {
-                    text: "max",
-                    prop: 0.9
+                    },
+                    {
+                        text: "medium",
+                        prop: 0.5
+                    },
+                    {
+                        text: "max",
+                        prop: 0.9
 
-                },
-                {
-                    text: "medium",
-                    prop: 0.5
-                },
-                {
-                    text: "max",
-                    prop: 0.9
+                    },
+                    {
+                        text: "medium",
+                        prop: 0.5
+                    },
+                    {
+                        text: "max",
+                        prop: 0.9
 
-                },
-                {
-                    text: "medium",
-                    prop: 0.5
-                },
-                {
-                    text: "min",
-                    prop: 0.1
+                    },
+                    {
+                        text: "medium",
+                        prop: 0.5
+                    },
+                    {
+                        text: "min",
+                        prop: 0.1
 
-                },
-                {
-                    text: "medium",
-                    prop: 0.5
-                },
-                {
-                    text: "min",
-                    prop: 0.1
+                    },
+                    {
+                        text: "medium",
+                        prop: 0.5
+                    },
+                    {
+                        text: "min",
+                        prop: 0.1
 
-                },
-                {
-                    text: "medium",
-                    prop: 0.5
-                },
-                {
-                    text: "min",
-                    prop: 0.1
+                    },
+                    {
+                        text: "medium",
+                        prop: 0.5
+                    },
+                    {
+                        text: "min",
+                        prop: 0.1
 
-                },
-                {
-                    text: "medium",
-                    prop: 0.5
-                },
-                {
-                    text: "min",
-                    prop: 0.1
+                    },
+                    {
+                        text: "medium",
+                        prop: 0.5
+                    },
+                    {
+                        text: "min",
+                        prop: 0.1
 
-                },
-                {
-                    text: "medium",
-                    prop: 0.5
-                },
-                {
-                    text: "min",
-                    prop: 0.1
+                    },
+                    {
+                        text: "medium",
+                        prop: 0.5
+                    },
+                    {
+                        text: "min",
+                        prop: 0.1
 
-                },
-                {
-                    text: "medium",
-                    prop: 0.5
-                },
-                {
-                    text: "min",
-                    prop: 0.1
+                    },
+                    {
+                        text: "medium",
+                        prop: 0.5
+                    },
+                    {
+                        text: "min",
+                        prop: 0.1
 
-                },
-                {
-                    text: "medium",
-                    prop: 0.5
-                },
-                {
-                    text: "min",
-                    prop: 0.1
+                    },
+                    {
+                        text: "medium",
+                        prop: 0.5
+                    },
+                    {
+                        text: "min",
+                        prop: 0.1
 
-                },
-                {
-                    text: "medium",
-                    prop: 0.5
-                }
-            ].slice(0, 3);
-            console.log($scope.data.length);
-            $scope.addData = function () {
-                $scope.data.push({
-                    text: "min",
-                    prop: 0.1
-                })
-
+                    },
+                    {
+                        text: "medium",
+                        prop: 0.5
+                    }
+                ].slice(0, 3);
                 console.log($scope.data.length);
-            }
-        })
+                $scope.addData = function () {
+                    $scope.data.push({
+                        text: "min",
+                        prop: 0.1
+                    })
+
+                    console.log($scope.data.length);
+                }
+            })
     </script>
 
 </head>
