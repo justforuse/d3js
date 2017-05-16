@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="d3.v3.js"></script>
+</head>
+
+<body>
+    <div>
+
+    </div>
+    <button>Remove</button>
+    <script>
+        var data = [1, 2, 3, 4];
+        var svg = d3.select("div")
+            .append("svg")
+            .append("g")
+            .selectAll("text")
+            .attr("width", 300)
+            .attr("height", 300)
+        svg.data(data)
+            .enter()
+            .append("text")
+            .style("font-size", "14px")
+            .style("stroke", "black")
+            .attr("y", function(d, i){
+                return 10 + 20 *i;
+            })
+            .text(function (d) {
+                return d;
+            })
+        d3.select("button")
+            .on("click", function () {
+                d3.select("g")
+                    .selectAll("text")
+                    .transition()
+                    .style("opacity", 0)
+                    .remove()
+            })
+    </script>
+</body>
+
+</html>
