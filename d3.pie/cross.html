@@ -10,77 +10,87 @@
 <body>
     <button onclick="alert('ss')">zz</button>
     <script>
-    var width = 500,
-        height = 500;
-    var data = [
-        {
-            "count": 36,
-            "name": "签收合同",
-            "proportion": 0.36
-        }, 
-        {
-            "count": 30,
-            "name": "收发合同",
-            "proportion": 0.36
-        },
-        {
-            "count": 36,
-            "name": "aaaa",
-            "proportion": 0.28
-        }
-    ];
-    // sort函数隐式执行降序排列，而且数据从顶部开始顺时针展示，传入null可以阻止排序
-    var pie = d3.layout.pie().sort(null).value(function(d){return d.proportion});
-    var color = d3.scale.category10();
-    var svg = d3.select("body").append("svg").attr("width", width + 100).attr("height", height + 100);
-    var outerRadius = width / 2;
-    var innerRadius = width / 4;
-    var arc = d3.svg.arc()
-        .innerRadius(innerRadius)
-        .outerRadius(outerRadius);
+        var width = 500,
+            height = 500;
+        var data = [
+            {
+                "count": 36,
+                "name": "签收合同",
+                "proportion": 0.36
+            },
+            {
+                "count": 30,
+                "name": "收发合同",
+                "proportion": 0.36
+            },
+            {
+                "count": 36,
+                "name": "aaaa",
+                "proportion": 0.28
+            }
+        ];
+        // sort函数隐式执行降序排列，而且数据从顶部开始顺时针展示，传入null可以阻止排序
+        var pie = d3.layout.pie().sort(null).value(function (d) { return d.proportion });
+        var color = d3.scale.category10();
+        var svg = d3.select("body").append("svg").attr("width", width + 100).attr("height", height + 100);
+        var outerRadius = width / 2;
+        var innerRadius = width / 4;
+        var arc = d3.svg.arc()
+            .innerRadius(innerRadius)
+            .outerRadius(outerRadius);
 
-    var arc2 = d3.svg.arc()
-        .innerRadius(innerRadius - 10)
-        .outerRadius(outerRadius + 20)
-    var arcs = svg.selectAll("g")
-        .data(pie(data))
-        .enter()
-        .append("g")
-        // 将g移至中间
-        .attr("transform", "translate(" + (outerRadius + 30) + "," + (outerRadius + 50) + ")")
-        //为每一块元素添加鼠标事件
-        .on("mouseover", function(d) {
+        var arc2 = d3.svg.arc()
+            .innerRadius(innerRadius - 10)
+            .outerRadius(outerRadius + 20)
+        var arcs = svg.selectAll("g")
+            .data(pie(data))
+            .enter()
+            .append("g")
+            // 将g移至中间
+            .attr("transform", "translate(" + (outerRadius + 30) + "," + (outerRadius + 50) + ")")
+            //为每一块元素添加鼠标事件
+            .on("mouseover", function (d) {
 
-            d3.select(this).select("path").transition().attr("d", function(d) {
-                console.log(d);
-                return arc2(d);
+                d3.select(this).select("path").transition().attr("d", function (d) {
+                    console.log(d);
+                    return arc2(d);
+                })
             })
-        })
-        .on("mouseout", function(d) {
-            d3.select(this).select("path").transition().attr("d", function(d) {
-                return arc(d);
+            .on("mouseout", function (d) {
+                d3.select(this).select("path").transition().attr("d", function (d) {
+                    return arc(d);
+                })
             })
-        })
-    arcs.append("path")
-	
-        .attr("fill", function(d, i) {
-            return color(i);
-        })
-		
-        .attr("d", arc)
-		.transition()
-		.transition(1000)
+        arcs.append("path")
+
+            .attr("fill", function (d, i) {
+                return color(i);
+            })
+            .transition()
+            .delay(function (d, i) { return i * 200; })
+            .duration(200)
+            .ease("linear")
+            // .attrTween('d', function (d) {
+            //     var i = d3.interpolate(d.startAngle + 0.1, d.endAngle);
+            //     return function (t) {
+            //         d.endAngle = i(t);
+            //         return arc(d);
+            //     }
+            // })
+        .attrTween("d", arc)
+        // .transition()
+        // .transition(1000)
         //add data value  
-    arcs.append("text")
-        .attr("transform", function(d) {
-            //get the centroid of every arc, include x and y, 质心
-            return "translate(" + arc.centroid(d) + ")";
-        })
-        .attr("text-anchor", "middle")
-        .text(function(d) {
-            console.log(d);
-            return d.data.name;
-        })
+        arcs.append("text")
+            .attr("transform", function (d) {
+                //get the centroid of every arc, include x and y, 质心
+                return "translate(" + arc.centroid(d) + ")";
+            })
+            .attr("text-anchor", "middle")
+            .text(function (d) {
+                console.log(d);
+                return d.data.name;
+            })
     </script>
 </body>
 
