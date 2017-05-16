@@ -23,6 +23,23 @@
             display: block;
         }
 
+        .hotword {
+            /*display: none;*/
+            background: white;
+            max-height:250px;
+            overflow: auto;
+        }
+
+        .hotword:hover {
+            z-index: 333;
+            border: 1px solid red;
+            display: block;
+        }
+
+        .hotword .relation-word:hover {
+            display: block;
+        }
+
         @keyframes someAnimationNameImadeUp {
             0% {
                 fill: red;
@@ -65,14 +82,14 @@
         }
 
         .word-cloud-text {
-            transition: all .3s linear;
+            /*transition: all .3s linear;*/
         }
 
         .word-cloud-text:hover {
-            font-size: 40px !important;
+            /*font-size: 40px !important;*/
             /*transform: scale(1.1);*/
-            animation: someAnimationNameImadeUp 3s infinite;
-            -webkit-animation: someAnimationNameImadeUp 3s infinite;
+            /*animation: someAnimationNameImadeUp 3s infinite;*/
+            /*-webkit-animation: someAnimationNameImadeUp 3s infinite;*/
         }
     </style>
     <script>
@@ -92,10 +109,13 @@
                             } else return undefined;
                         }
                         var color = d3.scale.category10();
-                        var div = d3.select("body").append("div")
+                        var div = d3.select("body")
+                            .append("div")
                             .attr("class", "hotword")
-                            .style("opacity", 0.9)
-                            .style("display", "none");
+                            .style("position", "fixed")
+                            .style("width", "50px")
+                            .style("border", "1px solid black")
+
                         function init() {
                             d3.select(element[0]).html("");
                             d3.layout.cloud()
@@ -125,9 +145,10 @@
                                 .data(words)
                                 .enter()
                                 .append("g")
-                                .on("mouseout", function(){
-                                    d3.selectAll(".hotword-relation")
-                                        .remove()
+                                .attr("transform", "translate(0,0)")
+                                .on("mouseout", function () {
+                                    // d3.selectAll(".hotword-relation")
+                                    //     .remove()
                                 })
 
                             var texts = textG.append("text")
@@ -141,7 +162,7 @@
                                 .style("cursor", function (d, i) {
                                     return "pointer";
                                 })
-
+                                .attr("text-anchor", "start")
                                 .attr("transform", function (d) {
                                     return "translate(" + [d.x, d.y] + ")";
                                 })
@@ -185,7 +206,7 @@
                                         .each("end", function () {
 
                                         })
-                                    
+
                                 })
 
 
@@ -209,17 +230,46 @@
                                 })
                                 .on("click", function (d) {
                                     console.log('tspan', d);
-                                    console.log(d3.event);
+                                    var event = d3.event;
                                     console.log(d3.select(this)[0].parentNode);
-                                    d3.select(this.parentNode.parentNode)
-                                        .append("rect")
-                                        .attr("class", "hotword-relation")
-                                        .attr("width", "30")
-                                        .attr("height", "50")
-                                        .style("stroke", "black")
+                                    d3.tsv("../data.tsv", function (data) {
+                                        div
+                                            .style("left", event.x - 10 + "px")
+                                            .style("top", event.y - 10 + "px")
+                                            .style("display", "block")
+                                            .on("mouseleave", function () {
+                                                d3.select(this)
+                                                    .style("display", "none")
+                                                // console.log(d3.event)
+                                            })
+                                            .selectAll("div.relation-word")
+                                            .data(data)
+                                            .enter()
+                                            .append("div")
+                                            .classed("relation-word", true)
+                                            .text(function (d) {
+                                                return d.letter;
+                                            })
+                                            .on("click", function (d) {
+                                                console.log(d);
+                                            })
+                                    })
+
+                                    // d3.select(this.parentNode.parentNode)
+                                    //     .append("rect")
+                                    //     .attr("transform", function (d) {
+                                    //         return "translate(" + [d.x+d.width/2, d.y] + ")";
+                                    //     })
+                                    //     .attr("x", 0)
+                                    //     .attr("y", 0)
+                                    //     .attr("class", "hotword-relation")
+                                    //     .attr("width", "30")
+                                    //     .attr("height", "50")
+                                    //     .style("stroke", "black")
+                                    //     .style("fill", "none")
                                 })
                                 .append("title")
-                                .text(function(){
+                                .text(function () {
                                     return "add filter"
                                 })
 
@@ -398,8 +448,8 @@
         <word-cloud word-data="data" data-length="{{data.length}}"></word-cloud>
     </div>
     <button ng-click="addData()">Add</button>
-    <div id="cloud"></div>
-    
+    <!--<div id="cloud"></div>-->
+
 </body>
 
 </html>
