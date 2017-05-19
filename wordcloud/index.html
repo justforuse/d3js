@@ -19,7 +19,7 @@
             display: none;
         }
 
-        text:hover>tspan {
+        text:hover > tspan {
             display: block;
         }
 
@@ -171,7 +171,8 @@
                                 })
                                 .style("text-anchor", "middle")
                                 .on("click", function (d) {
-                                    console.log(d);
+
+                                    console.log("text click");
 
 
                                 })
@@ -216,12 +217,15 @@
                                 });
 
                             texts.append("tspan")
+                                .classed("text-button", true)
                                 // .attr("x0", function(d){
                                 //     return d.off;
                                 // })
                                 // .attr("y", function(d){
                                 //     return d.y;
                                 // })
+                                
+                                .style("font-size", "20")
                                 .style("border", "1px solid black")
                                 .style("fill", "firebrick")
                                 .style("stroke", "black")
@@ -231,6 +235,9 @@
                                 .on("click", function (d) {
                                     console.log('tspan', d);
                                     var event = d3.event;
+                                    if("tspan" === event.target.localName){
+                                        d3.event.stopPropagation();
+                                    }
                                     console.log(d3.select(this)[0].parentNode);
                                     d3.tsv("../data.tsv", function (data) {
                                         div

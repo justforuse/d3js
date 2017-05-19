@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="../bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" href="../font-awesome-4.7.0/css/font-awesome.css">
+    <script src="../d3.v3.js"></script>
+    <style>
+        svg {
+            font-family: 'FontAwesome';
+        }
+    </style>
+</head>
+
+<body>
+    <svg width="500" height="500">
+        
+    </svg>
+    <script>
+        d3.select("svg")
+            .append("text")
+            .attr("transform", "translate(50, 50)")
+            .append("tspan")
+            .style("fill", "red")
+            .text('\uf05e')
+            
+            .append("tspan")
+            .attr("class", "glyphicon")
+            .style("fill", "pink")
+            .text("\ue090")
+    </script>
+</body>
+
+</html>
