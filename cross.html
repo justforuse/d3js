@@ -7,283 +7,297 @@
 	<script src="d3.v3.js"></script>
 	<script src="../jquery.js"></script>
 	<style>
-		svg {
-		padding: 10px;
-	}
-	
-	text {
-		width: 20px;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
-	
-	rect:hover {
-		fill: #CAEE7D;
-		cursor: pointer;
-	}
-	
-	.axis line {
-		shape-rendering: crispEdges;
-		stroke: #b1d564;
-	}
-	
-	.axis .minor line {
-		stroke: #d8d8d8;
-		stroke-width: 1;
-	}
-	
-	.y text {
-		font-size: 11px;
-		fill: #606060;
-	}
-	
-	.x text {
-		font-size: 11px;
-		fill: #606060;
-	}
-	
-	div.tooltip {
-		position: fixed;
-		text-align: center;
-		width: 60px;
-		height: 28px;
-		padding: 2px;
-		font: 12px sans-serif;
-		background: lightsteelblue;
-		border: 0px;
-		border-radius: 8px;
-		pointer-events: none;
+			svg {
+			padding: 10px;
+		}
+
+		text {
+			width: 20px;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+
+		rect.green:hover {
+			fill: #99FFCC;
+		}
+
+		rect:hover {
+			/*fill: #CAEE7D;*/
+			/*opacity: 0.9;*/
+			cursor: pointer;
+		}
+
+		.axis line {
+			shape-rendering: crispEdges;
+			stroke: #b1d564;
+		}
+
+		.axis .minor line {
+			stroke: #d8d8d8;
+			stroke-width: 1;
+		}
+
+		.y text {
+			font-size: 11px;
+			fill: #606060;
+		}
+
+		.x text {
+			font-size: 11px;
+			fill: #606060;
+		}
+
+		div.tooltip {
+			position: fixed;
+			text-align: center;
+			width: 60px;
+			height: 28px;
+			padding: 2px;
+			font: 12px sans-serif;
+			background: lightsteelblue;
+			border: 0px;
+			border-radius: 8px;
+			pointer-events: none;
 	</style>
 </head>
 
 <body>
 	<button>clear</button>
 	<script>
-	var o = {
-		"name": "allen",
-		"age": 21,
-		"address": "beijing"
-	}
-
-	d3.select("body")
-		.select("button")
-		.on("click", function() {
-			console.log('ready to clear');
-			d3.select(".svgContainer > svg").remove();
-		})
-
-
-	var falseData1 = {
-		"data": {
-			"average": 1206.96,
-			"pageIndex": 0,
-			"pageSize": 6,
-			"series": [{
-				"proportion": 1.0,
-				"id": "非常长",
-				"count": 50,
-				"name": "非常长(600~*)",
-				"data": null
-			}],
-			"totalPage": 0,
-			"totalRows": 1
-		},
-		"message": "成功",
-		"result": "success"
-	};
-	var falseData2 = {
-		"data": {
-			"average": 23.9,
-			"pageIndex": 0,
-			"pageSize": 6,
-			"series": [{
-				"proportion": 0.7,
-				"id": "非常短",
-				"count": 35,
-				"name": "短(30~60)",
-				"data": null
-			}, {
-				"proportion": 0.26,
-				"id": "短",
-				"count": 13,
-				"name": "短(30~60)",
-				"data": null
-			}, {
-				"proportion": 0.02,
-				"id": "长",
-				"count": 1,
-				"name": "长(90~120)",
-				"data": null
-			}, {
-				"proportion": 0.02,
-				"id": "正常",
-				"count": 1,
-				"name": "正常(60~90)",
-				"data": null
-			}],
-			"totalPage": 0,
-			"totalRows": 4
-		},
-		"message": "成功",
-		"result": "success"
-	};
-
-	var dataset = falseData2.data.series;
-	//var dataset2 = dataset.push({});
-	console.log(dataset);
-	var dod = [];
-	for (var i = 0; i < dataset.length; i++) {
-		dod.push(dataset[i].name)
-	}
-	dod.push("");
-	console.log(dod);
-	var svgWidth = 500,
-		svgHeight = 280;
-	var width = 460,
-		height = 250;
-	var rect_step = width / dataset.length;
-	var rect_width = rect_step / 2;
-	console.log("rect_step: " + rect_step);
-
-	function tenlize(num) {
-		return num % 10 == 0 ? num : num + (10 - num % 10);
-	}
-
-	function shortlize(str) {
-		if (str.length <= 4) {
-			return str;
-		} else {
-			return str.substring(0, 4) + "...";
+		var o = {
+			"name": "allen",
+			"age": 21,
+			"address": "beijing"
 		}
-	}
-	var x = d3.scale.linear()
-		.rangeRound([0, width]);
 
-	var y = d3.scale.linear()
-		.domain([0, d3.max(dataset, function(d) {
-			console.log(d.count);
-			return tenlize(d.count);
-		})])
-		.range([height, 0])
-	x.domain(dod)
-	var xAxis = d3.svg.axis()
-		.scale(x)
-		.tickSize(10, 0)
-		.tickFormat(function(d) {
-			return shortlize(d);
-		})
-		.orient("bottom")
+		d3.select("body")
+			.select("button")
+			.on("click", function () {
+				console.log('ready to clear');
+				d3.select(".svgContainer > svg").remove();
+			})
+
+
+		var falseData1 = {
+			"data": {
+				"average": 1206.96,
+				"pageIndex": 0,
+				"pageSize": 6,
+				"series": [{
+					"proportion": 1.0,
+					"id": "非常长",
+					"count": 50,
+					"name": "非常长(600~*)",
+					"data": null
+				}],
+				"totalPage": 0,
+				"totalRows": 1
+			},
+			"message": "成功",
+			"result": "success"
+		};
+		var falseData2 = {
+			"data": {
+				"average": 23.9,
+				"pageIndex": 0,
+				"pageSize": 6,
+				"series": [{
+					"proportion": 0.7,
+					"id": "非常短",
+					"count": 35,
+					"name": "短(30~60)",
+					"data": null
+				}, {
+					"proportion": 0.26,
+					"id": "短",
+					"count": 13,
+					"name": "短(30~60)",
+					"data": null
+				}, {
+					"proportion": 0.02,
+					"id": "长",
+					"count": 1,
+					"name": "长(90~120)",
+					"data": null
+				}, {
+					"proportion": 0.02,
+					"id": "正常",
+					"count": 1,
+					"name": "正常(60~90)",
+					"data": null
+				}],
+				"totalPage": 0,
+				"totalRows": 4
+			},
+			"message": "成功",
+			"result": "success"
+		};
+		var myColor = d3.scale.quantize()
+			.domain([0, 1])
+			.range([d3.rgb("#8ceab9"), d3.rgb("#bfbfbf")])
+		var dataset = falseData2.data.series;
+		//var dataset2 = dataset.push({});
+		console.log(dataset);
+		var dod = [];
+		for (var i = 0; i < dataset.length; i++) {
+			dod.push(dataset[i].name)
+		}
+		dod.push("");
+		console.log(dod);
+		var svgWidth = 500,
+			svgHeight = 280;
+		var width = 460,
+			height = 250;
+		var rect_step = width / dataset.length;
+		var rect_width = rect_step / 2;
+		console.log("rect_step: " + rect_step);
+
+		function tenlize(num) {
+			return num % 10 == 0 ? num : num + (10 - num % 10);
+		}
+
+		function shortlize(str) {
+			if (str.length <= 4) {
+				return str;
+			} else {
+				return str.substring(0, 4) + "...";
+			}
+		}
+		var x = d3.scale.linear()
+			.rangeRound([0, width]);
+
+		var y = d3.scale.linear()
+			.domain([0, d3.max(dataset, function (d) {
+				console.log(d.count);
+				return tenlize(d.count);
+			})])
+			.range([height, 0])
+		x.domain(dod)
+		var xAxis = d3.svg.axis()
+			.scale(x)
+			.tickSize(10, 0)
+			.tickFormat(function (d) {
+				return shortlize(d);
+			})
+			.orient("bottom")
 		// dataset.map(function(d) {
 		//         return d.name;
 		//     })
 
 
 
-	var yAxis = d3.svg.axis()
-		.scale(y)
-		.orient("left")
-		.tickSize(-1 * width)
-		.ticks(5)
+		var yAxis = d3.svg.axis()
+			.scale(y)
+			.orient("left")
+			.tickSize(-1 * width)
+			.ticks(5)
 
 
-	var svg = d3.select("body")
-		.append("div")
-		.attr("class", "svgContainer")
-		.append("svg")
-		.attr("width", svgWidth)
-		.attr("height", svgHeight)
-		.append("g")
-		.attr("transform", "translate(30,10)")
+		var svg = d3.select("body")
+			.append("div")
+			.attr("class", "svgContainer")
+			.append("svg")
+			.attr("width", svgWidth)
+			.attr("height", svgHeight)
+			.append("g")
+			.attr("transform", "translate(30,10)")
 
 
-	svg.append("g")
-		.attr("class", "x axis")
-		.attr("transform", "translate(0, " + height + ")")
-		.call(xAxis)
-		.attr("fill", "none")
-		.selectAll(".tick text")
-		.attr("x", rect_width)
-		.attr("text-anchor", "start")
+		svg.append("g")
+			.attr("class", "x axis")
+			.attr("transform", "translate(0, " + height + ")")
+			.call(xAxis)
+			.attr("fill", "none")
+			.selectAll(".tick text")
+			.attr("x", rect_width)
+			.attr("text-anchor", "start")
 
 
-	var div = d3.select("body").append("div")
-		.attr("class", "tooltip")
-		.style("opacity", 0);
+		var div = d3.select("body").append("div")
+			.attr("class", "tooltip")
+			.style("opacity", 0);
 
 
-	var gy = svg.append("g")
-		.attr("class", "y axis")
-		.attr("transform", "translate(0, 0)")
-		.call(yAxis)
-		.attr("fill", "none")
+		var gy = svg.append("g")
+			.attr("class", "y axis")
+			.attr("transform", "translate(0, 0)")
+			.call(yAxis)
+			.attr("fill", "none")
 
-	gy.selectAll("g")
-		.classed("minor", true)
+		gy.selectAll("g")
+			.classed("minor", true)
 
 
-	svg.selectAll(".bar")
-		.data(dataset)
-		.enter()
-		.append("rect")
-		.attr("fill", "#b1d564")
-		.attr("class", "bar")
-		.attr("y", function(d, i) {
-			console.log(y(d.count));
-			return height;
-		})
-		.attr("height", 0)
-		.attr("width", function(d, i) {
-			return rect_width;
-		})
-		.transition()
-		.duration(1000)
-		.attr("x", function(d, i) {
-			return i * rect_step + (rect_width / 2);
-		})
-		.attr("y", function(d, i) {
-			return y(d.count);
-		})
-		.attr("height", function(d, i) {
-			return height - y(d.count);
-		})
-		.attr("title", function(d) {
-			return d.count;
-		})
+		svg.selectAll(".bar")
+			.data(dataset)
+			.enter()
+			.append("rect")
+			.attr("fill", function (d, i) {
+				return myColor(i % 2);
+			})
+			.attr("class", "bar")
+			.classed("green", function(d, i){
+				return !i%2;
+			})
+			.attr("y", function (d, i) {
+				console.log(y(d.count));
+				return height;
+			})
+			.attr("height", 0)
+			.attr("width", function (d, i) {
+				return rect_width;
+			})
+			.transition()
+			.duration(1000)
+			/*.ease("linear")*/
+			.attr("x", function (d, i) {
+				return i * rect_step + (rect_width / 2);
+			})
+			.attr("y", function (d, i) {
+				return y(d.count);
+			})
+			.attr("height", function (d, i) {
+				return height - y(d.count);
+			})
+			.attr("title", function (d) {
+				return d.count;
+			})
 
-	svg.selectAll("rect")
-		.on("click", getData)
-		.on("mouseenter", showTip)
-		.on("mouseout", hideTip)
-		.on("mousemove", showTip)
+		svg.selectAll("rect")
+			.on("click", getData)
+			.on("mouseenter", showTip)
+			.on("mouseout", hideTip)
+			.on("mousemove", showTip)
 
-	function showTip() {
-		console.log(setTip(this));
-		//console.log(tip);
-		div.html(setTip(this))
-			.style("left", (d3.event.pageX) + "px")
-			.style("top", (d3.event.pageY - 28) + "px");
-		div.transition()
-			.duration(300)
-			.style("opacity", 0.9)
-	}
+		function showTip() {
+			console.log(setTip(this));
+			//console.log(tip);
+			
+			div.html(setTip(this))
+				.style("left", (d3.event.pageX) + "px")
+				.style("top", (d3.event.pageY - 28) + "px");
+			div.transition()
+				.duration(300)
+				.style("opacity", 0.9)
+		}
 
-	function getData() {
-		console.log($(this).attr("title"));
-	}
+		function getData() {
+			console.log($(this).attr("title"));
+		}
 
-	function setTip(obj) {
-		//console.log(this);
-		//console.log(d3.select(this));
-		console.log($(obj).attr("title"))
-		return $(obj).attr("title");
-	}
+		function setTip(obj) {
+			//console.log(this);
+			//console.log(d3.select(this));
+			console.log($(obj).attr("title"))
+			return $(obj).attr("title");
+		}
 
-	function hideTip() {
-		div.transition()
-			.duration(100)
-			.style("opacity", 0)
-	}
+		function hideTip() {
+			div.transition()
+				.duration(100)
+				.style("opacity", 0)
+		}
 
 
 	// svg.selectAll("rect")
