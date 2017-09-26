@@ -15,17 +15,17 @@
         var data = [
             {
                 "count": 36,
-                "name": "签收合同",
+                "name": "aaa",
                 "proportion": 0.36
             },
             {
                 "count": 30,
-                "name": "收发合同",
+                "name": "bbb",
                 "proportion": 0.36
             },
             {
                 "count": 36,
-                "name": "aaaa",
+                "name": "ccc",
                 "proportion": 0.28
             }
         ];
@@ -70,14 +70,14 @@
             .delay(function (d, i) { return i * 200; })
             .duration(200)
             .ease("linear")
-            // .attrTween('d', function (d) {
-            //     var i = d3.interpolate(d.startAngle + 0.1, d.endAngle);
-            //     return function (t) {
-            //         d.endAngle = i(t);
-            //         return arc(d);
-            //     }
-            // })
-        .attrTween("d", arc)
+            .attrTween('d', function (d) {
+                var i = d3.interpolate(d.startAngle, d.endAngle);
+                return function (t) {
+                    d.endAngle = i(t);
+                    return arc(d);
+                }
+            })
+            // .attr("d", arc)
         // .transition()
         // .transition(1000)
         //add data value  
