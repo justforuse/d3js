@@ -16,19 +16,21 @@
             {
                 "count": 36,
                 "name": "aaa",
-                "proportion": 0.36
+                "proportion": 0.10
             },
             {
                 "count": 30,
                 "name": "bbb",
-                "proportion": 0.36
+                "proportion": 0.05
             },
             {
                 "count": 36,
                 "name": "ccc",
-                "proportion": 0.28
+                "proportion": 0.85
             }
         ];
+        // 总动画时长为1000ms
+        var time = 1000;
         // sort函数隐式执行降序排列，而且数据从顶部开始顺时针展示，传入null可以阻止排序
         var pie = d3.layout.pie().sort(null).value(function (d) { return d.proportion });
         var color = d3.scale.category10();
@@ -52,7 +54,6 @@
             .on("mouseover", function (d) {
 
                 d3.select(this).select("path").transition().attr("d", function (d) {
-                    console.log(d);
                     return arc2(d);
                 })
             })
@@ -67,8 +68,12 @@
                 return color(i);
             })
             .transition()
-            .delay(function (d, i) { return i * 200; })
-            .duration(200)
+            .delay(function (d, i, datas) {
+                return computeDelay(i)
+            })
+            .duration(function (d, i) {
+                return d.data.proportion * time
+            })
             .ease("linear")
             .attrTween('d', function (d) {
                 var i = d3.interpolate(d.startAngle, d.endAngle);
@@ -77,7 +82,7 @@
                     return arc(d);
                 }
             })
-            // .attr("d", arc)
+        // .attr("d", arc)
         // .transition()
         // .transition(1000)
         //add data value  
@@ -88,9 +93,16 @@
             })
             .attr("text-anchor", "middle")
             .text(function (d) {
-                console.log(d);
                 return d.data.name;
             })
+        // 计算某个饼图数据需延时多久执行动画
+        function computeDelay(index) {
+            var delay = 0
+            for (var i = 0; i < index; i++) {
+                delay += data[i].proportion
+            }
+            return delay * time
+        }
     </script>
 </body>
 
