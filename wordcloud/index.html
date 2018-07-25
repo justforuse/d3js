@@ -19,14 +19,14 @@
             display: none;
         }
 
-        text:hover > tspan {
+        text:hover>tspan {
             display: block;
         }
 
         .hotword {
             /*display: none;*/
             background: white;
-            max-height:250px;
+            max-height: 250px;
             overflow: auto;
         }
 
@@ -91,6 +91,23 @@
             /*animation: someAnimationNameImadeUp 3s infinite;*/
             /*-webkit-animation: someAnimationNameImadeUp 3s infinite;*/
         }
+
+        html {
+            height: 100%;
+            width: 100%;
+        }
+
+        body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        svg {
+            height: 100%;
+            width: 100%;
+        }
     </style>
     <script>
         angular.module("app", [])
@@ -137,8 +154,10 @@
                                 .append("svg")
                                 // .attr("preserveAspectRatio", "xMidYMid meet")
                                 // .attr("viewBox", "0 0 500 500")
-                                .attr("width", 800)
+                                .attr("width", 400)
                                 .attr("height", 400)
+                                .attr("preserveAspectRatio", "xMidYMid meet")
+                                .attr("viewBox", "0 0 400 400")
                                 .append("g")
                                 .attr("transform", "translate(400,200)")
                                 .selectAll("g")
@@ -224,7 +243,7 @@
                                 // .attr("y", function(d){
                                 //     return d.y;
                                 // })
-                                
+
                                 .style("font-size", "20")
                                 .style("border", "1px solid black")
                                 .style("fill", "firebrick")
@@ -235,7 +254,7 @@
                                 .on("click", function (d) {
                                     console.log('tspan', d);
                                     var event = d3.event;
-                                    if("tspan" === event.target.localName){
+                                    if ("tspan" === event.target.localName) {
                                         d3.event.stopPropagation();
                                     }
                                     console.log(d3.select(this)[0].parentNode);
